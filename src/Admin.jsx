@@ -223,6 +223,15 @@ function CertificateManager({supabase}){
  const revokeCertificate=async()=>{if(!revoke)return;if(revoke.reason.trim().length<5){setNotice('Please enter a revocation reason of at least 5 characters.','error');return;}setBusy(true);try{const {error}=await supabase.rpc('revoke_eho_certificate',{p_certificate_id:revoke.id,p_reason:revoke.reason.trim()});if(!mounted.current)return;if(error){console.error('[EHO admin] Revocation failed:',error);setNotice('Revocation failed: '+problemText(describeSupabaseError(error,'certificate revocation')),'error');return;}setRevoke(null);setNotice('Certificate revoked. Public verification will now show the revoked status.');await load();}catch(err){console.error('[EHO admin] Revocation failed:',err);if(mounted.current)setNotice('Revocation failed: '+problemText(describeSupabaseError(err,'certificate revocation')),'error');}finally{if(mounted.current)setBusy(false)}};
  const certificateHtml=(r)=>{
   const verifyUrl=`${window.location.origin}/verify/${encodeURIComponent(r.certificate_id)}`;
+  const formatDate=(value)=>{
+    if(!value)return '';
+    const parts=String(value).slice(0,10).split('-');
+    if(parts.length!==3)return String(value);
+    const [year,month,day]=parts;
+    const date=new Date(Number(year),Number(month)-1,Number(day));
+    return Number.isNaN(date.getTime())?String(value):date.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  };
+  const internshipPeriod=(r.issue_date&&r.completion_date)?`${formatDate(r.issue_date)} – ${formatDate(r.completion_date)}`:'';
   const rawDetails=String(r.details||'');
   const durationMatch=rawDetails.match(/(?:^|\n)Internship Duration:\s*([^\n]+)/i);
   const duration=durationMatch?.[1]?.trim()||'';
@@ -264,7 +273,7 @@ function CertificateManager({supabase}){
     .qr-wrap{justify-self:end;text-align:center}
     .qr{width:23mm;height:23mm;display:block;margin:0 auto 1mm}
     .qr-caption{font:8px Arial,sans-serif;color:#394861;font-weight:600}
-    .certificate-id{font:9px Arial,sans-serif;color:#45536a;margin-top:3mm;letter-spacing:.3px}
+    .certificate-id{font:9px Arial,sans-serif;color:#45536a;margin-top:3mm;letter-spacing:.3px}.verify-link{color:#1d4e89;text-decoration:underline;font-weight:700;cursor:pointer}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
   </style></head><body><main class="cert"><div class="content">
     <img class="logo" alt="EHO logo" src="${window.location.origin}/eho-logo.png">
@@ -274,16 +283,16 @@ function CertificateManager({supabase}){
     <p class="presented">This certificate is proudly presented to</p>
     <div class="name">${escapeHtml(r.recipient_name)}</div>
     <p class="achievement">In recognition of successful completion of <b>${escapeHtml(r.program_name)}</b>.</p>
-    ${r.completion_date?`<p class="date-line">Internship end date / Achievement date: ${escapeHtml(r.completion_date)}</p>`:''}
-    ${duration?`<div class="duration">PROGRAM DURATION · ${escapeHtml(duration)}</div>`:''}
+    ${r.completion_date?`<p class="date-line">Internship end date / Achievement date: ${escapeHtml(formatDate(r.completion_date))}</p>`:'' }
+    ${internshipPeriod?`<div class="duration">INTERNSHIP DURATION · ${escapeHtml(internshipPeriod)}</div>`:(duration?`<div class="duration">PROGRAM DURATION · ${escapeHtml(duration)}</div>`:'' )}
     ${extraDetails?`<div class="details">${escapeHtml(extraDetails)}</div>`:''}
     <div class="spacer"></div>
     <section class="footer">
       <div><div class="footer-label">Issued by</div><div class="footer-value"><b>${escapeHtml(r.issuer_name||'EHO')}</b><br>Internship start date: ${escapeHtml(r.issue_date)}</div></div>
       <div class="signature">${signature}<div class="sign-line"></div><div class="footer-value"><b>${escapeHtml(r.signatory_name||'Authorized Signatory')}</b><br>Authorized signatory</div>${r.grade?`<div class="footer-value">Grade / score: ${escapeHtml(r.grade)}</div>`:''}</div>
-      <div class="qr-wrap"><img class="qr" alt="QR code for certificate verification" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=${encodeURIComponent(verifyUrl)}"><div class="qr-caption">Scan to verify authenticity</div></div>
+      <div class="qr-wrap"><a href="${escapeHtml(verifyUrl)}" target="_blank" rel="noopener noreferrer" title="Open online certificate verification"><img class="qr" alt="QR code for certificate verification" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=${encodeURIComponent(verifyUrl)}"></a><div class="qr-caption">Scan or click to verify online</div></div>
     </section>
-    <div class="certificate-id">CERTIFICATE ID: <b>${escapeHtml(r.certificate_id)}</b> &nbsp;·&nbsp; Verify: ${escapeHtml(verifyUrl)}</div>
+    <div class="certificate-id">CERTIFICATE ID: <b>${escapeHtml(r.certificate_id)}</b> &nbsp;·&nbsp; <a class="verify-link" href="${escapeHtml(verifyUrl)}" target="_blank" rel="noopener noreferrer">Verify Certificate Online</a></div>
   </div></main><script>window.onload=()=>window.print()</script></body></html>`;
 };
  const downloadCertificate=(r)=>{const w=window.open('','_blank');if(!w){setNotice('Allow pop-ups to print/download the certificate.','error');return;}w.document.write(certificateHtml(r));w.document.close()};
