@@ -296,39 +296,55 @@ function CertificateManager({supabase}){
 };
  const downloadCertificate=(r)=>{
   const w=window.open('','_blank');
-  if(!w){setNotice('Pop-ups are blocked. Allow pop-ups for eho-delta.vercel.app and click Download PDF again.','error');return;}
+  if(!w){setNotice('Pop-ups are blocked. Allow pop-ups for this site, then click Download PDF again.','error');return;}
   const html=certificateHtml(r)
     .replace('</head>',`<style>
-      @page{size:A4 landscape;margin:9mm}
+      @page{size:297mm 210mm landscape;margin:0}
       @media print{
-        html,body{margin:0!important;padding:0!important;background:#fff!important}
-        .cert{width:279mm!important;height:192mm!important;break-inside:avoid;page-break-inside:avoid}
+        html,body{width:297mm!important;height:210mm!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
+        .cert{box-sizing:border-box!important;width:297mm!important;height:210mm!important;max-width:none!important;margin:0!important;padding:10mm 15mm 8mm!important;overflow:hidden!important;break-inside:avoid!important;page-break-inside:avoid!important}
+        .content{height:100%!important}
+        .title{font-size:27px!important;line-height:1.12!important;max-width:96%!important;margin:2mm 0 3mm!important}
+        .presented{margin-bottom:1mm!important}
+        .name{font-size:27px!important;padding-bottom:1mm!important}
+        .achievement{margin-top:2mm!important;font-size:12px!important}
+        .duration{margin-top:2mm!important;padding:1.6mm 7mm!important}
+        .details{margin-top:2mm!important;font-size:10px!important;line-height:1.35!important}
+        .spacer{min-height:2mm!important}
+        .footer{padding-top:3mm!important;gap:6mm!important}
+        .qr{width:21mm!important;height:21mm!important}
         *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
       }
     </style></head>`)
     .replace('</body></html>', `<script>
-      window.addEventListener('load',()=>{
-        setTimeout(()=>{
-          window.focus();
-          window.print();
-        },700);
+      window.addEventListener('load',async()=>{
+        try{
+          if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+          const images=Array.from(document.images);
+          await Promise.all(images.map(img=>{
+            if(img.complete)return Promise.resolve();
+            return new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;setTimeout(resolve,4000)});
+          }));
+        }catch(e){}
+        setTimeout(()=>{window.focus();window.print();},500);
       });
     </script></body></html>`);
   w.document.open();w.document.write(html);w.document.close();
  };
  const deleteCertificate=async(r)=>{
-  const confirmed=window.confirm(`Permanently delete the certificate for ${r.recipient_name} (ID: ${r.certificate_id})? This cannot be undone and its public verification record will be removed.`);
+  const confirmed=window.confirm(`Permanently delete the certificate for ${r.recipient_name} (ID: ${r.certificate_id})? This cannot be undone and the public verification record will be removed.`);
   if(!confirmed)return;
   setBusy(true);setNotice('');
   try{
     const {data,error}=await supabase.rpc('delete_eho_certificate',{p_certificate_id:r.certificate_id});
     if(error)throw error;
-    if(data!==true)throw new Error('The database did not confirm deletion.');
+    if(data!==true)throw new Error('The database returned no deletion confirmation (response: '+JSON.stringify(data)+').');
+    setRows(current=>current.filter(item=>item.certificate_id!==r.certificate_id));
     setNotice(`Certificate ${r.certificate_id} permanently deleted.`);
-    await load();
   }catch(err){
     console.error('[EHO admin] Certificate deletion failed:',err);
-    if(mounted.current)setNotice('Delete failed: '+problemText(describeSupabaseError(err,'certificate deletion')),'error');
+    const diagnostic=[err?.message,err?.code&&('Code: '+err.code),err?.details,err?.hint&&('Hint: '+err.hint)].filter(Boolean).join(' | ');
+    if(mounted.current)setNotice('Delete failed: '+(diagnostic||problemText(describeSupabaseError(err,'certificate deletion'))),'error');
   }finally{if(mounted.current)setBusy(false)}
  };
  return <div className="certificate-workspace">
