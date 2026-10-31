@@ -246,7 +246,7 @@ function CertificateManager({supabase}){
     @page{size:A4 landscape;margin:9mm}
     *{box-sizing:border-box}
     body{margin:0;background:#fff;color:#17243a;font-family:Georgia,'Times New Roman',serif}
-    .cert{height:192mm;position:relative;overflow:hidden;border:2px solid #b49448;padding:10mm 15mm 8mm;text-align:center;background:linear-gradient(135deg,#fff 0%,#fffdf7 100%)}
+    .cert{width:279mm;height:192mm;position:relative;overflow:hidden;border:2px solid #b49448;padding:10mm 15mm 8mm;text-align:center;background:linear-gradient(135deg,#fff 0%,#fffdf7 100%)}
     .cert:before{content:"";position:absolute;inset:3mm;border:1px solid #d7c48f;pointer-events:none}
     .content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center}
     .logo{width:20mm;height:20mm;object-fit:contain;margin:0 auto 2mm}
@@ -275,7 +275,7 @@ function CertificateManager({supabase}){
     .qr-caption{font:8px Arial,sans-serif;color:#394861;font-weight:600}
     .certificate-id{font:9px Arial,sans-serif;color:#45536a;margin-top:3mm;letter-spacing:.3px}.verify-link{color:#1d4e89;text-decoration:underline;font-weight:700;cursor:pointer}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-  </style></head><body><main class="cert"><div class="content">
+  </style></head><body><main class="cert" id="eho-certificate"><div class="content">
     <img class="logo" alt="EHO logo" src="${window.location.origin}/eho-logo.png">
     <div class="brand">EHO</div><div class="kicker">ETHICAL HACKING ORGANIZATIONS</div>
     <div class="rule"></div><p class="eyebrow">Certificate of Achievement</p>
@@ -283,7 +283,6 @@ function CertificateManager({supabase}){
     <p class="presented">This certificate is proudly presented to</p>
     <div class="name">${escapeHtml(r.recipient_name)}</div>
     <p class="achievement">In recognition of successful completion of <b>${escapeHtml(r.program_name)}</b>.</p>
-    ${r.completion_date?`<p class="date-line">Internship end date / Achievement date: ${escapeHtml(formatDate(r.completion_date))}</p>`:'' }
     ${internshipPeriod?`<div class="duration">INTERNSHIP DURATION · ${escapeHtml(internshipPeriod)}</div>`:(duration?`<div class="duration">PROGRAM DURATION · ${escapeHtml(duration)}</div>`:'' )}
     ${extraDetails?`<div class="details">${escapeHtml(extraDetails)}</div>`:''}
     <div class="spacer"></div>
@@ -293,9 +292,47 @@ function CertificateManager({supabase}){
       <div class="qr-wrap"><a href="${escapeHtml(verifyUrl)}" target="_blank" rel="noopener noreferrer" title="Open online certificate verification"><img class="qr" alt="QR code for certificate verification" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=${encodeURIComponent(verifyUrl)}"></a><div class="qr-caption">Scan or click to verify online</div></div>
     </section>
     <div class="certificate-id">CERTIFICATE ID: <b>${escapeHtml(r.certificate_id)}</b> &nbsp;·&nbsp; <a class="verify-link" href="${escapeHtml(verifyUrl)}" target="_blank" rel="noopener noreferrer">Verify Certificate Online</a></div>
-  </div></main><script>window.onload=()=>window.print()</script></body></html>`;
+  </div></main></body></html>`;
 };
- const downloadCertificate=(r)=>{const w=window.open('','_blank');if(!w){setNotice('Allow pop-ups to print/download the certificate.','error');return;}w.document.write(certificateHtml(r));w.document.close()};
+ const downloadCertificate=(r)=>{
+  const w=window.open('','_blank');
+  if(!w){setNotice('Please allow pop-ups to download the certificate PDF.','error');return;}
+  const html=certificateHtml(r).replace('</head>',`<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
+  <style>
+    body{padding:16px;background:#eef1f5;font-family:Arial,sans-serif}
+    .download-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:center;gap:12px;padding:12px;margin:-16px -16px 16px;background:#172b49}
+    .download-toolbar button{border:0;border-radius:7px;padding:11px 20px;font-weight:700;cursor:pointer}
+    .download-now{background:#d7b45b;color:#17243a}.print-fallback{background:#fff;color:#17243a}
+    .preview-wrap{display:flex;justify-content:center;overflow:auto}
+    @media print{body{padding:0;background:#fff}.download-toolbar{display:none}.preview-wrap{display:block}}
+  </style></head>`)
+  .replace('<body><main class="cert" id="eho-certificate">','<body><div class="download-toolbar"><button class="download-now" onclick="downloadEhoPdf()">⬇ Download PDF</button><button class="print-fallback" onclick="window.print()">Print</button></div><div class="preview-wrap"><main class="cert" id="eho-certificate">')
+  .replace('</div></main></body></html>', '</div></main></div><script>
+    async function downloadEhoPdf(){
+      const button=document.querySelector(".download-now");
+      if(!window.html2pdf){button.textContent="Loading PDF tool…";setTimeout(()=>button.textContent="⬇ Download PDF",1200);return;}
+      button.disabled=true;button.textContent="Preparing high-quality PDF…";
+      try{
+        await document.fonts.ready;
+        const logo=document.querySelector(".logo");if(logo&&logo.decode){try{await logo.decode()}catch(e){}}
+        const qr=document.querySelector(".qr");if(qr&&qr.decode){try{await qr.decode()}catch(e){}}
+        const element=document.getElementById("eho-certificate");
+        await html2pdf().set({
+          margin:[9,9,9,9],
+          filename:${JSON.stringify(String(r.certificate_id||'EHO-Certificate')+'.pdf')},
+          image:{type:"jpeg",quality:1},
+          html2canvas:{scale:3,useCORS:true,allowTaint:false,backgroundColor:"#ffffff",logging:false},
+          jsPDF:{unit:"mm",format:"a4",orientation:"landscape",compress:true},
+          pagebreak:{mode:["avoid-all"]}
+        }).from(element).save();
+        button.textContent="✓ PDF Downloaded";
+      }catch(error){console.error(error);button.textContent="Download failed — use Print";alert("PDF download failed. Please use the Print button and choose Save as PDF.");}
+      finally{button.disabled=false;}
+    }
+    window.addEventListener("load",()=>{const b=document.querySelector(".download-now");if(b)b.disabled=false;});
+  </script></body></html>');
+  w.document.open();w.document.write(html);w.document.close();
+ };
  return <div className="certificate-workspace">
   <div className="admin-stats"><div><span>Total certificates</span><b>{rows.length}</b><small>database records</small></div><div><span>Active</span><b>{rows.filter(r=>r.status==='issued').length}</b><small>currently valid</small></div><div><span>Revoked</span><b>{rows.filter(r=>r.status==='revoked').length}</b><small>retained for audit</small></div></div>
   {notice&&<div className={'admin-notice'+(notice.type==='error'?' is-error':'')} role={notice.type==='error'?'alert':'status'}>{notice.text}</div>}
@@ -312,7 +349,7 @@ function CertificateManager({supabase}){
   </div><div className="admin-form-actions"><button className="admin-primary" disabled={busy}>{busy?'Issuing…':'Issue certificate'}</button></div></form></div>
   <div className="admin-panel-card"><h2>Authorized signature</h2><p className="admin-help">Set the manager's signature once. This changes only the signature shown on printed certificates; the certificate layout, IDs and QR verification remain unchanged.</p><div className="admin-form"><label>Signature type<select value={signatureSettings.mode} onChange={e=>setSignatureSettings(s=>({...s,mode:e.target.value}))}><option value="typed">Stylish name (script font)</option><option value="image">Upload signature image</option></select></label>{signatureSettings.mode==='image'?<label>Signature image (PNG/JPG/WebP, max 500 KB)<input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleSignatureFile}/></label>:<label>Font style<select value={signatureSettings.font_style} onChange={e=>setSignatureSettings(s=>({...s,font_style:e.target.value}))}><option value="script">Handwritten script</option><option value="italic">Elegant italic</option></select></label>}</div>{signatureSettings.mode==='image'&&signatureSettings.image_data_url&&<div className="admin-row"><img src={signatureSettings.image_data_url} alt="Signature preview" style={{maxWidth:220,maxHeight:90,objectFit:'contain'}}/><button type="button" className="icon-btn danger" onClick={()=>setSignatureSettings(s=>({...s,image_data_url:''}))}>Remove image</button></div>}{signatureNotice&&<div className="admin-notice" role="status">{signatureNotice}</div>}<div className="admin-form-actions"><button type="button" className="admin-primary" disabled={signatureBusy||(signatureSettings.mode==='image'&&!signatureSettings.image_data_url)} onClick={saveSignatureSettings}>{signatureBusy?'Saving…':'Save signature settings'}</button></div></div>
   <div className="admin-panel-card"><h2>Certificate records</h2><div className="certificate-filters"><input aria-label="Search certificates" placeholder="Search ID, recipient or program" value={query} onChange={e=>setQuery(e.target.value)}/><select aria-label="Filter status" value={status} onChange={e=>setStatus(e.target.value)}><option value="all">All statuses</option><option value="issued">Active</option><option value="revoked">Revoked</option></select></div>
-  {loading?<p>Loading certificate records…</p>:filtered.length===0?<p className="admin-help">No certificate records match this filter.</p>:filtered.map(r=><div className="admin-row cert-row" key={r.certificate_id}><div><b>{r.recipient_name}</b><small>{r.certificate_id} · {r.program_name} · Internship Start: {r.issue_date}</small>{r.status==='revoked'&&<small>Revoked: {r.revocation_reason||'Reason not available'}</small>}</div><span className={'admin-pill '+(r.status==='issued'?'green':'')}>{r.status}</span><button className="icon-btn" onClick={()=>startEdit(r)}><Pencil size={14}/> Edit</button><button className="icon-btn" onClick={()=>downloadCertificate(r)}>Print / PDF</button>{r.status==='issued'&&<button className="icon-btn danger" onClick={()=>setRevoke({id:r.certificate_id,reason:''})}>Revoke</button>}</div>)}
+  {loading?<p>Loading certificate records…</p>:filtered.length===0?<p className="admin-help">No certificate records match this filter.</p>:filtered.map(r=><div className="admin-row cert-row" key={r.certificate_id}><div><b>{r.recipient_name}</b><small>{r.certificate_id} · {r.program_name} · Internship Start: {r.issue_date}</small>{r.status==='revoked'&&<small>Revoked: {r.revocation_reason||'Reason not available'}</small>}</div><span className={'admin-pill '+(r.status==='issued'?'green':'')}>{r.status}</span><button className="icon-btn" onClick={()=>startEdit(r)}><Pencil size={14}/> Edit</button><button className="icon-btn" onClick={()=>downloadCertificate(r)}>⬇ Download PDF</button>{r.status==='issued'&&<button className="icon-btn danger" onClick={()=>setRevoke({id:r.certificate_id,reason:''})}>Revoke</button>}</div>)}
   </div>
   {editing&&editForm&&<div className="admin-modal-backdrop"><form className="admin-modal" onSubmit={saveEdit}><div className="admin-toolbar"><h2>Edit issued certificate</h2><button type="button" className="icon-btn" aria-label="Close editor" onClick={()=>{setEditing(null);setEditForm(null)}}><X size={16}/></button></div><p>Correct the existing record for <b>{editing}</b>. The Certificate ID, QR link, issue status and revocation history cannot be changed here.</p><div className="admin-form"><label>Recipient full name *<input required maxLength="160" value={editForm.recipient_name} onChange={e=>setEditForm({...editForm,recipient_name:e.target.value})}/></label><label>Certificate title *<input required maxLength="180" value={editForm.certificate_title} onChange={e=>setEditForm({...editForm,certificate_title:e.target.value})}/></label><label className="full">Course / internship / achievement *<input required maxLength="180" value={editForm.program_name} onChange={e=>setEditForm({...editForm,program_name:e.target.value})}/></label><label>Internship Start Date *<input type="date" required value={editForm.issue_date} onChange={e=>setEditForm({...editForm,issue_date:e.target.value})}/></label><label>Internship End Date / Achievement Date<input type="date" value={editForm.completion_date} onChange={e=>setEditForm({...editForm,completion_date:e.target.value})}/></label><label>Issuing organization *<input required maxLength="180" value={editForm.issuer_name} onChange={e=>setEditForm({...editForm,issuer_name:e.target.value})}/></label><label>Authorized signatory<input maxLength="160" value={editForm.signatory_name} onChange={e=>setEditForm({...editForm,signatory_name:e.target.value})}/></label><label>Grade / score<input maxLength="80" value={editForm.grade} onChange={e=>setEditForm({...editForm,grade:e.target.value})}/></label><label className="full">Additional details / duration<textarea rows="3" maxLength="1000" value={editForm.details} onChange={e=>setEditForm({...editForm,details:e.target.value})}/></label></div><div className="admin-form-actions"><button className="admin-primary" disabled={busy}>{busy?'Saving…':'Save certificate changes'}</button><button type="button" className="admin-btn" disabled={busy} onClick={()=>{setEditing(null);setEditForm(null)}}>Cancel</button></div></form></div>}
   {revoke&&<div className="admin-modal-backdrop"><form className="admin-modal" onSubmit={e=>{e.preventDefault();revokeCertificate()}}><h2>Revoke certificate</h2><p>Certificate <b>{revoke.id}</b> will remain in the database but will no longer be valid.</p><label>Revocation reason *<textarea required minLength="5" maxLength="1000" value={revoke.reason} onChange={e=>setRevoke({...revoke,reason:e.target.value})}/></label><div className="admin-form-actions"><button className="admin-primary" disabled={busy}>Confirm revocation</button><button type="button" className="admin-btn" disabled={busy} onClick={()=>setRevoke(null)}>Cancel</button></div></form></div>}
