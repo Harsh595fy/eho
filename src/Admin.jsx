@@ -402,6 +402,20 @@ function OfferLetterManager({supabase}){
  const load=useCallback(async()=>{setLoading(true);const {data,error}=await supabase.from('eho_offer_letters').select('offer_letter_id,recipient_name,program_name,participation,duration,start_date,end_date,issue_date,issuer_name,signatory_name,details,created_at').order('created_at',{ascending:false}).limit(500);if(!mounted.current)return;if(error){console.error('[EHO admin] Offer letters load failed:',error);setNotice({type:'error',text:'Offer letter storage is not ready. Apply the supplied Supabase migration, then refresh. '+problemText(describeSupabaseError(error,'offer letter list'))});}else setRows(data||[]);setLoading(false)},[supabase,mounted]);
  useEffect(()=>{load()},[load]);
  const issue=async(e)=>{e.preventDefault();if(form.end_date<form.start_date){setNotice({type:'error',text:'End date cannot be earlier than start date.'});return;}setBusy(true);setNotice(null);try{const {data,error}=await supabase.rpc('issue_eho_offer_letter',{p_recipient_name:form.recipient_name.trim(),p_program_name:form.program_name.trim(),p_participation:form.participation.trim(),p_duration:form.duration.trim(),p_start_date:form.start_date,p_end_date:form.end_date,p_issue_date:form.issue_date,p_issuer_name:form.issuer_name.trim(),p_signatory_name:form.signatory_name.trim()||null,p_details:form.details.trim()||null});if(error)throw error;setNotice({type:'success',text:'Offer letter created: '+data});setForm(f=>({...f,recipient_name:'',participation:'Cybersecurity project-based internship',details:''}));await load()}catch(err){console.error('[EHO admin] Offer letter issue failed:',err);setNotice({type:'error',text:'Could not create offer letter. '+problemText(describeSupabaseError(err,'offer letter issuance'))})}finally{if(mounted.current)setBusy(false)}};
+ const deleteOfferLetter=async(r)=>{
+  if(!window.confirm(`Remove saved offer letter ${r.offer_letter_id} for ${r.recipient_name}?`))return;
+  setBusy(true);setNotice(null);
+  try{
+    const {data,error}=await supabase.rpc('delete_eho_offer_letter',{p_offer_letter_id:r.offer_letter_id});
+    if(error)throw error;
+    if(data!==true)throw new Error('The database did not confirm the operation.');
+    setRows(current=>current.filter(item=>item.offer_letter_id!==r.offer_letter_id));
+    setNotice({type:'success',text:'Offer letter removed: '+r.offer_letter_id});
+  }catch(err){
+    console.error('[EHO admin] Offer letter removal failed:',err);
+    setNotice({type:'error',text:'Removal is not configured yet. Apply supabase/migrations/20261031_eho_delete_offer_letters.sql, then retry. '+(err.message||'')});
+  }finally{if(mounted.current)setBusy(false)}
+ };
  const printLetter=r=>{
   const w=window.open('','_blank');
   if(!w){setNotice({type:'error',text:'Allow pop-ups for this website, then click Print / Save PDF again.'});return;}
@@ -410,32 +424,32 @@ function OfferLetterManager({supabase}){
   const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(r.offer_letter_id)+' — EHO Offer Letter</title><style>
   @page{size:A4 portrait;margin:0}
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;width:210mm;min-height:297mm;background:#fff;color:#172b49;font-family:Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .page{width:210mm;min-height:297mm;position:relative;padding:17mm 19mm 19mm;background:linear-gradient(145deg,#fffefa 0%,#fff 55%,#fcf8ee 100%);border:2px solid #9a7430;overflow:hidden}
-  .page:before{content:"";position:absolute;inset:5mm;border:1px solid #c4a45e;pointer-events:none}
-  .inner{position:relative;z-index:1}
-  .head{display:flex;align-items:center;gap:5mm;padding-bottom:6mm;border-bottom:2px solid #b08a3c}
-  .head img{width:21mm;height:21mm;object-fit:contain}
-  .brand{font:700 21pt Georgia,serif;letter-spacing:4px;color:#806022}
-  .org{font:700 8pt Arial,sans-serif;letter-spacing:2.4px;color:#27364b;margin-top:1.5mm}
-  .kicker{text-align:center;margin:10mm 0 2mm;color:#806022;font:700 8pt Arial,sans-serif;letter-spacing:3px}
-  h1{text-align:center;font:700 25pt Georgia,serif;color:#172b49;margin:0 0 2mm}
-  .subtitle{text-align:center;color:#475467;font:10pt Arial,sans-serif;margin:0 0 8mm}
-  .meta{display:flex;justify-content:space-between;gap:8mm;padding:3mm 0;border-top:1px solid #c4a45e;border-bottom:1px solid #c4a45e;font-size:8.5pt;color:#344054}
-  .salutation{font:11pt Georgia,serif;margin:8mm 0 2mm;color:#26364f}
-  .candidate{font:700 19pt Georgia,serif;color:#806022;margin:0 0 5mm}
-  .body{font:10.5pt/1.65 Arial,sans-serif;color:#26364f}
-  .body p{margin:0 0 4mm}
-  .program{margin:5mm 0;padding:5mm 6mm;background:#fbf6e9;border:1.2px solid #b08a3c;border-left:3px solid #9a7430;line-height:1.7;font-size:9.5pt;color:#26364f}
+  html,body{margin:0;padding:0;width:210mm;height:297mm;background:#fff;color:#172b49;font-family:Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{width:210mm;height:297mm;min-height:0;max-height:297mm;position:relative;padding:13mm 16mm 16mm;background:linear-gradient(145deg,#fffefa 0%,#fff 55%,#fcf8ee 100%);border:2px solid #9a7430;overflow:hidden;break-inside:avoid;page-break-inside:avoid}
+  .page:before{content:"";position:absolute;inset:4mm;border:1px solid #c4a45e;pointer-events:none}
+  .inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+  .head{display:flex;align-items:center;gap:4mm;padding-bottom:4mm;border-bottom:2px solid #b08a3c}
+  .head img{width:17mm;height:17mm;object-fit:contain}
+  .brand{font:700 19pt Georgia,serif;letter-spacing:4px;color:#806022}
+  .org{font:700 7.5pt Arial,sans-serif;letter-spacing:2px;color:#27364b;margin-top:1mm}
+  .kicker{text-align:center;margin:6mm 0 1.5mm;color:#806022;font:700 7.5pt Arial,sans-serif;letter-spacing:2.5px}
+  h1{text-align:center;font:700 22pt Georgia,serif;color:#172b49;margin:0 0 1.5mm}
+  .subtitle{text-align:center;color:#475467;font:9pt Arial,sans-serif;margin:0 0 5mm}
+  .meta{display:flex;justify-content:space-between;gap:6mm;padding:2.5mm 0;border-top:1px solid #c4a45e;border-bottom:1px solid #c4a45e;font-size:8pt;color:#344054}
+  .salutation{font:10pt Georgia,serif;margin:5mm 0 1mm;color:#26364f}
+  .candidate{font:700 17pt Georgia,serif;color:#806022;margin:0 0 3mm}
+  .body{font:9.3pt/1.42 Arial,sans-serif;color:#26364f}
+  .body p{margin:0 0 2.5mm}
+  .program{margin:3mm 0;padding:3mm 4mm;background:#fbf6e9;border:1.2px solid #b08a3c;border-left:3px solid #9a7430;line-height:1.45;font-size:8.7pt;color:#26364f}
   .program strong{color:#5b4520}
-  .section-title{font:700 10pt Georgia,serif;color:#806022;margin:6mm 0 2mm}
-  .details{white-space:pre-wrap;font:9.5pt/1.6 Arial,sans-serif;color:#26364f}
-  .sign-area{margin-top:13mm;display:flex;justify-content:space-between;align-items:flex-end;gap:12mm}
-  .sign{width:68mm;border-top:1.2px solid #b08a3c;padding-top:2mm;font-size:8.5pt;line-height:1.5;color:#344054}
-  .sign b{font:700 11pt Georgia,serif;color:#26364f}
-  .stamp{font:700 8pt Arial,sans-serif;letter-spacing:1.2px;color:#806022;border:1px solid #c4a45e;padding:3mm 4mm;text-align:center}
-  .foot{position:absolute;bottom:10mm;left:19mm;right:19mm;border-top:1px solid #c4a45e;padding-top:3mm;display:flex;justify-content:space-between;gap:5mm;font-size:7.5pt;color:#475467}
-  @media print{html,body{width:210mm!important;height:297mm!important} .page{width:210mm!important;min-height:297mm!important;page-break-after:avoid;break-after:avoid}}
+  .section-title{font:700 9pt Georgia,serif;color:#806022;margin:3.5mm 0 1.5mm}
+  .details{white-space:pre-wrap;overflow-wrap:anywhere;font:8.5pt/1.35 Arial,sans-serif;color:#26364f}
+  .sign-area{margin-top:auto;padding-top:6mm;display:flex;justify-content:space-between;align-items:flex-end;gap:10mm}
+  .sign{width:68mm;border-top:1.2px solid #b08a3c;padding-top:2mm;font-size:8pt;line-height:1.4;color:#344054}
+  .sign b{font:700 10pt Georgia,serif;color:#26364f}
+  .stamp{font:700 7.5pt Arial,sans-serif;letter-spacing:1px;color:#806022;border:1px solid #c4a45e;padding:2.5mm 3.5mm;text-align:center}
+  .foot{position:absolute;bottom:7mm;left:16mm;right:16mm;border-top:1px solid #c4a45e;padding-top:2mm;display:flex;justify-content:space-between;gap:5mm;font-size:7pt;color:#475467}
+  @media print{html,body{width:210mm!important;height:297mm!important;min-height:297mm!important;max-height:297mm!important;overflow:hidden!important} .page{width:210mm!important;height:297mm!important;min-height:297mm!important;max-height:297mm!important;margin:0!important;break-after:avoid!important;page-break-after:avoid!important}}
   </style></head><body><main class="page"><div class="inner">
   <header class="head"><img src="'+location.origin+'/eho-logo.png" alt="EHO"><div><div class="brand">EHO</div><div class="org">ETHICAL HACKING ORGANIZATIONS</div></div></header>
   <div class="kicker">OFFICIAL COMMUNICATION</div><h1>Internship Offer Letter</h1><p class="subtitle">Learn · Build · Secure · Grow</p>
@@ -453,7 +467,7 @@ function OfferLetterManager({supabase}){
   w.document.open();w.document.write(html);w.document.close();
  };
  const filtered=rows.filter(r=>(r.offer_letter_id+' '+r.recipient_name+' '+r.program_name).toLowerCase().includes(query.toLowerCase()));
- return <div className="certificate-workspace"><div className="admin-stats"><div><span>Offer letters</span><b>{rows.length}</b><small>saved in Supabase</small></div><div><span>Storage</span><b>Cloud</b><small>persistent records</small></div></div>{notice&&<div className={'admin-notice'+(notice.type==='error'?' is-error':'')}>{notice.text}</div>}<div className="admin-panel-card"><h2>Create internship offer letter</h2><p className="admin-help">Create, save and print a branded A4 offer letter. Each letter receives a unique reference number.</p><form onSubmit={issue}><div className="admin-form"><label>Student full name *<input required maxLength="160" value={form.recipient_name} onChange={e=>setForm({...form,recipient_name:e.target.value})}/></label><label>Internship domain *<select required value={Object.keys(opportunityProfiles).find(k=>opportunityProfiles[k].program===form.program_name)||'Other'} onChange={e=>{const p=opportunityProfiles[e.target.value];setForm(f=>p?({...f,program_name:p.program,participation:p.participation,details:p.details}):({...f,program_name:'',participation:'',details:''}))}}>{Object.keys(opportunityProfiles).map(k=><option key={k} value={k}>{k}</option>)}<option value="Other">Other / Custom Program</option></select></label>{!Object.values(opportunityProfiles).some(p=>p.program===form.program_name)&&<label>Custom program title *<input required maxLength="180" value={form.program_name} onChange={e=>setForm({...form,program_name:e.target.value})}/></label>}<label className="full">Participation / selected area *<input required maxLength="240" value={form.participation} onChange={e=>setForm({...form,participation:e.target.value})}/></label><label>Duration *<input required maxLength="80" value={form.duration} onChange={e=>setForm({...form,duration:e.target.value})}/></label><label>Issue date *<input type="date" required value={form.issue_date} onChange={e=>setForm({...form,issue_date:e.target.value})}/></label><label>Program start date *<input type="date" required value={form.start_date} onChange={e=>setForm({...form,start_date:e.target.value})}/></label><label>Program end date *<input type="date" required min={form.start_date||undefined} value={form.end_date} onChange={e=>setForm({...form,end_date:e.target.value})}/></label><label>Issuing organization *<input required maxLength="180" value={form.issuer_name} onChange={e=>setForm({...form,issuer_name:e.target.value})}/></label><label>Authorized signatory<input maxLength="160" value={form.signatory_name} onChange={e=>setForm({...form,signatory_name:e.target.value})}/></label><label className="full">Additional notes<textarea rows="3" maxLength="1200" value={form.details} onChange={e=>setForm({...form,details:e.target.value})}/></label></div><div className="admin-form-actions"><button className="admin-primary" disabled={busy}>{busy?'Saving…':'Save & create offer letter'}</button></div></form></div><div className="admin-panel-card"><h2>Saved offer letters</h2><div className="certificate-filters"><input placeholder="Search reference, student or program" value={query} onChange={e=>setQuery(e.target.value)}/></div>{loading?<p>Loading offer letters…</p>:filtered.length===0?<p className="admin-help">No offer letters saved yet.</p>:filtered.map(r=><div className="admin-row cert-row" key={r.offer_letter_id}><div><b>{r.recipient_name}</b><small>{r.offer_letter_id} · {r.program_name} · {r.duration} · {r.start_date} to {r.end_date}</small></div><span className="admin-pill green">Saved</span><button className="icon-btn" onClick={()=>printLetter(r)}>Print / PDF</button></div>)}</div></div>
+ return <div className="certificate-workspace"><div className="admin-stats"><div><span>Offer letters</span><b>{rows.length}</b><small>saved in Supabase</small></div><div><span>Storage</span><b>Cloud</b><small>persistent records</small></div></div>{notice&&<div className={'admin-notice'+(notice.type==='error'?' is-error':'')}>{notice.text}</div>}<div className="admin-panel-card"><h2>Create internship offer letter</h2><p className="admin-help">Create, save and print a branded A4 offer letter. Each letter receives a unique reference number.</p><form onSubmit={issue}><div className="admin-form"><label>Student full name *<input required maxLength="160" value={form.recipient_name} onChange={e=>setForm({...form,recipient_name:e.target.value})}/></label><label>Internship domain *<select required value={Object.keys(opportunityProfiles).find(k=>opportunityProfiles[k].program===form.program_name)||'Other'} onChange={e=>{const p=opportunityProfiles[e.target.value];setForm(f=>p?({...f,program_name:p.program,participation:p.participation,details:p.details}):({...f,program_name:'',participation:'',details:''}))}}>{Object.keys(opportunityProfiles).map(k=><option key={k} value={k}>{k}</option>)}<option value="Other">Other / Custom Program</option></select></label>{!Object.values(opportunityProfiles).some(p=>p.program===form.program_name)&&<label>Custom program title *<input required maxLength="180" value={form.program_name} onChange={e=>setForm({...form,program_name:e.target.value})}/></label>}<label className="full">Participation / selected area *<input required maxLength="240" value={form.participation} onChange={e=>setForm({...form,participation:e.target.value})}/></label><label>Duration *<input required maxLength="80" value={form.duration} onChange={e=>setForm({...form,duration:e.target.value})}/></label><label>Issue date *<input type="date" required value={form.issue_date} onChange={e=>setForm({...form,issue_date:e.target.value})}/></label><label>Program start date *<input type="date" required value={form.start_date} onChange={e=>setForm({...form,start_date:e.target.value})}/></label><label>Program end date *<input type="date" required min={form.start_date||undefined} value={form.end_date} onChange={e=>setForm({...form,end_date:e.target.value})}/></label><label>Issuing organization *<input required maxLength="180" value={form.issuer_name} onChange={e=>setForm({...form,issuer_name:e.target.value})}/></label><label>Authorized signatory<input maxLength="160" value={form.signatory_name} onChange={e=>setForm({...form,signatory_name:e.target.value})}/></label><label className="full">Additional notes<textarea rows="3" maxLength="1200" value={form.details} onChange={e=>setForm({...form,details:e.target.value})}/></label></div><div className="admin-form-actions"><button className="admin-primary" disabled={busy}>{busy?'Saving…':'Save & create offer letter'}</button></div></form></div><div className="admin-panel-card"><h2>Saved offer letters</h2><div className="certificate-filters"><input placeholder="Search reference, student or program" value={query} onChange={e=>setQuery(e.target.value)}/></div>{loading?<p>Loading offer letters…</p>:filtered.length===0?<p className="admin-help">No offer letters saved yet.</p>:filtered.map(r=><div className="admin-row cert-row" key={r.offer_letter_id}><div><b>{r.recipient_name}</b><small>{r.offer_letter_id} · {r.program_name} · {r.duration} · {r.start_date} to {r.end_date}</small></div><span className="admin-pill green">Saved</span><button className="icon-btn" onClick={()=>printLetter(r)}>Print / PDF</button><button type="button" className="icon-btn danger" disabled={busy} onClick={()=>deleteOfferLetter(r)}><Trash2 size={14}/> Delete</button></div>)}</div></div>
 }
 
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
