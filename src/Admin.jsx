@@ -224,9 +224,9 @@ function CertificateManager({supabase}){
  const certificateHtml=(r)=>{
   const verifyUrl=`${window.location.origin}/verify/${encodeURIComponent(r.certificate_id)}`;
   const rawDetails=String(r.details||'');
-  const durationMatch=rawDetails.match(/(?:^|\\n)Internship Duration:\\s*([^\\n]+)/i);
+  const durationMatch=rawDetails.match(/(?:^|\n)Internship Duration:\s*([^\n]+)/i);
   const duration=durationMatch?.[1]?.trim()||'';
-  const extraDetails=rawDetails.replace(/(?:^|\\n)Internship Duration:\\s*[^\\n]+/i,'').trim();
+  const extraDetails=rawDetails.replace(/(?:^|\n)Internship Duration:\s*[^\n]+/i,'').trim();
   const signature= r.signatory_name
     ? (signatureSettings.mode==='image'&&signatureSettings.image_data_url
       ? `<img class="signature-image" alt="Authorized signature" src="${signatureSettings.image_data_url}">`
