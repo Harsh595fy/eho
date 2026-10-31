@@ -246,38 +246,38 @@ function CertificateManager({supabase}){
     @page{size:A4 landscape;margin:9mm}
     *{box-sizing:border-box}
     body{margin:0;background:#fff;color:#111827;font-family:Georgia,'Times New Roman',serif}
-    .cert{width:279mm;height:192mm;position:relative;overflow:hidden;border:1.5px solid #667085;padding:10mm 15mm 8mm;text-align:center;background:#fff}
-    .cert:before{content:"";position:absolute;inset:3mm;border:1px solid #aab2bd;pointer-events:none}
+    .cert{width:279mm;height:192mm;position:relative;overflow:hidden;border:2px solid #9a7430;padding:10mm 15mm 8mm;text-align:center;background:linear-gradient(145deg,#fffefa 0%,#fff 52%,#fcf8ee 100%)}
+    .cert:before{content:"";position:absolute;inset:3mm;border:1px solid #c4a45e;pointer-events:none}
     .content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center}
     .logo{width:20mm;height:20mm;object-fit:contain;margin:0 auto 2mm}
-    .brand{font:700 15px Arial,sans-serif;letter-spacing:6px;color:#27364b}
+    .brand{font:700 15px Arial,sans-serif;letter-spacing:6px;color:#806022}
     .kicker{font:700 9px Arial,sans-serif;letter-spacing:3.5px;color:#27364b;margin-top:2mm}
-    .rule{width:42mm;height:1px;background:#667085;margin:4mm auto 3mm}
+    .rule{width:42mm;height:1.2px;background:#b08a3c;margin:4mm auto 3mm}
     .eyebrow{font:700 10px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#475467;margin:0}
     .title{font-size:clamp(25px,3vw,34px);line-height:1.15;color:#172b49;margin:3mm 0 5mm;max-width:95%;font-weight:700}
     .presented{font-size:14px;color:#344054;margin:0 0 2mm}
-    .name{font-size:30px;font-weight:700;color:#26364f;border-bottom:1px solid #667085;padding:0 22mm 2mm;display:inline-block;max-width:90%}
+    .name{font-size:30px;font-weight:700;color:#26364f;border-bottom:1.5px solid #b08a3c;padding:0 22mm 2mm;display:inline-block;max-width:90%}
     .achievement{font-size:14px;line-height:1.5;color:#1f2937;margin:4mm 0 0;max-width:90%}
     .achievement b{color:#172b49}
     .date-line{font:11px Arial,sans-serif;color:#344054;margin:2mm 0 0}
-    .duration{display:inline-block;margin:4mm auto 0;padding:2.2mm 8mm;border:1px solid #667085;border-radius:3mm;background:#fff;color:#26364f;font:700 11px Arial,sans-serif;letter-spacing:.5px}
+    .duration{display:inline-block;margin:4mm auto 0;padding:2.2mm 8mm;border:1.2px solid #b08a3c;border-radius:3mm;background:#fbf6e9;color:#5b4520;font:700 11px Arial,sans-serif;letter-spacing:.5px}
     .details{font:600 11px Arial,sans-serif;line-height:1.5;color:#1f2937;margin:3mm auto 0;max-width:82%;white-space:pre-wrap}
     .spacer{flex:1;min-height:4mm}
-    .footer{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:8mm;border-top:1px solid #98a2b3;padding-top:4mm;text-align:left}
+    .footer{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:8mm;border-top:1.2px solid #b08a3c;padding-top:4mm;text-align:left}
     .footer-label{font:700 9px Arial,sans-serif;color:#344054;text-transform:uppercase;letter-spacing:1px;margin-bottom:1mm}
     .footer-value{font:10px Arial,sans-serif;color:#111827;line-height:1.5;font-weight:600}
     .signature{justify-self:center;text-align:center;min-width:48mm}
     .signature-image{display:block;max-width:38mm;max-height:13mm;object-fit:contain;margin:0 auto 1mm}
     .signature-script{font-family:'Segoe Script','Brush Script MT','Snell Roundhand',cursive;font-style:italic;font-size:24px;line-height:1.1;color:#172b49;margin:0 auto 1mm}
-    .sign-line{width:48mm;border-top:1px solid #667085;margin:1mm auto}
+    .sign-line{width:48mm;border-top:1.2px solid #b08a3c;margin:1mm auto}
     .qr-wrap{justify-self:end;text-align:center}
     .qr{width:23mm;height:23mm;display:block;margin:0 auto 1mm}
     .qr-caption{font:600 8px Arial,sans-serif;color:#344054}
     .certificate-id{font:600 9px Arial,sans-serif;color:#344054;margin-top:3mm;letter-spacing:.3px}.verify-link{color:#173f6b;text-decoration:underline;font-weight:700;cursor:pointer}
     @media print{
       html,body{background:#fff!important;color:#111827!important}
-      .cert{background:#fff!important;border-color:#667085!important}
-      .cert:before{border-color:#aab2bd!important}
+      .cert{background:#fff!important;border-color:#9a7430!important}
+      .cert:before{border-color:#c4a45e!important}
       *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     }
   </style></head><body><main class="cert" id="eho-certificate"><div class="content">
@@ -322,9 +322,9 @@ function CertificateManager({supabase}){
         .content{height:100%!important}
         .title{font-size:27pt!important;color:#172b49!important;line-height:1.12!important;max-width:96%!important;margin:2mm 0 3mm!important}
         .presented{font-size:11pt!important;color:#26364f!important;margin-bottom:1mm!important}
-        .name{font-size:24pt!important;color:#26364f!important;border-color:#667085!important;padding-bottom:1mm!important}
+        .name{font-size:24pt!important;color:#26364f!important;border-color:#b08a3c!important;padding-bottom:1mm!important}
         .achievement{margin-top:2mm!important;font-size:10pt!important;color:#111827!important}
-        .duration{margin-top:2mm!important;background:#fff!important;color:#26364f!important;border-color:#667085!important;padding:1.6mm 7mm!important;font-size:8.5pt!important}
+        .duration{margin-top:2mm!important;background:#fbf6e9!important;color:#5b4520!important;border-color:#b08a3c!important;padding:1.6mm 7mm!important;font-size:8.5pt!important}
         .details{margin-top:2mm!important;color:#111827!important;font-size:8.5pt!important;line-height:1.35!important}
         .spacer{min-height:2mm!important}
         .footer{padding-top:3mm!important;border-color:#98a2b3!important;gap:6mm!important}
