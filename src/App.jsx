@@ -105,6 +105,7 @@ function Home() {
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? <X/> : <Menu/>}</button>
         <div className={`nav-links ${menuOpen ? "nav-open" : ""}`}>
           <a onClick={() => setMenuOpen(false)} href="#home">Home</a>
+          <a className="nav-verify" onClick={() => setMenuOpen(false)} href="/verify/"><BadgeCheck size={15}/> Verify Certificate</a>
           <a onClick={() => setMenuOpen(false)} href="#courses">Free Courses</a>
           <a onClick={() => setMenuOpen(false)} href="#internships">Internships</a>
           <a onClick={() => setMenuOpen(false)} href="#about">About</a>
@@ -123,6 +124,7 @@ function Home() {
           <div className="hero-actions">
             <a className="btn btn-gold" href="#courses">Explore Courses <ArrowUpRight size={17}/></a>
             <a className="btn btn-outline" href="#internships">Explore Internships</a>
+            <a className="btn btn-verify-hero" href="/verify/"><BadgeCheck size={17}/> Verify Certificate</a>
           </div>
           <div className="hero-points">
             <span><ShieldCheck size={17}/> Security-minded learning</span>
