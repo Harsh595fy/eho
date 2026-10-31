@@ -124,7 +124,6 @@ function Home() {
           <div className="hero-actions">
             <a className="btn btn-gold" href="#courses">Explore Courses <ArrowUpRight size={17}/></a>
             <a className="btn btn-outline" href="#internships">Explore Internships</a>
-            <a className="btn btn-verify-hero" href="/verify/"><BadgeCheck size={17}/> Verify Certificate</a>
           </div>
           <div className="hero-points">
             <span><ShieldCheck size={17}/> Security-minded learning</span>
