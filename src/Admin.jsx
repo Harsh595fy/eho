@@ -297,40 +297,52 @@ function CertificateManager({supabase}){
  const downloadCertificate=(r)=>{
   const w=window.open('','_blank');
   if(!w){setNotice('Please allow pop-ups to download the certificate PDF.','error');return;}
-  const html=certificateHtml(r).replace('</head>',`<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
-  <style>
-    body{padding:16px;background:#eef1f5;font-family:Arial,sans-serif}
-    .download-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:center;gap:12px;padding:12px;margin:-16px -16px 16px;background:#172b49}
-    .download-toolbar button{border:0;border-radius:7px;padding:11px 20px;font-weight:700;cursor:pointer}
-    .download-now{background:#d7b45b;color:#17243a}.print-fallback{background:#fff;color:#17243a}
-    .preview-wrap{display:flex;justify-content:center;overflow:auto}
-    @media print{body{padding:0;background:#fff}.download-toolbar{display:none}.preview-wrap{display:block}}
-  </style></head>`)
-  .replace('<body><main class="cert" id="eho-certificate">','<body><div class="download-toolbar"><button class="download-now" onclick="downloadEhoPdf()">⬇ Download PDF</button><button class="print-fallback" onclick="window.print()">Print</button></div><div class="preview-wrap"><main class="cert" id="eho-certificate">')
-  .replace('</div></main></body></html>', `</div></main></div><script>
-    async function downloadEhoPdf(){
-      const button=document.querySelector(".download-now");
-      if(!window.html2pdf){button.textContent="Loading PDF tool…";setTimeout(()=>button.textContent="⬇ Download PDF",1200);return;}
-      button.disabled=true;button.textContent="Preparing high-quality PDF…";
-      try{
-        await document.fonts.ready;
-        const logo=document.querySelector(".logo");if(logo&&logo.decode){try{await logo.decode()}catch(e){}}
-        const qr=document.querySelector(".qr");if(qr&&qr.decode){try{await qr.decode()}catch(e){}}
-        const element=document.getElementById("eho-certificate");
-        await html2pdf().set({
-          margin:[9,9,9,9],
-          filename:${JSON.stringify(String(r.certificate_id||'EHO-Certificate')+'.pdf')},
-          image:{type:"jpeg",quality:1},
-          html2canvas:{scale:3,useCORS:true,allowTaint:false,backgroundColor:"#ffffff",logging:false},
-          jsPDF:{unit:"mm",format:"a4",orientation:"landscape",compress:true},
-          pagebreak:{mode:["avoid-all"]}
-        }).from(element).save();
-        button.textContent="✓ PDF Downloaded";
-      }catch(error){console.error(error);button.textContent="Download failed — use Print";alert("PDF download failed. Please use the Print button and choose Save as PDF.");}
-      finally{button.disabled=false;}
-    }
-    window.addEventListener("load",()=>{const b=document.querySelector(".download-now");if(b)b.disabled=false;});
-  </script></body></html>`);
+  const html=certificateHtml(r)
+    .replace('</head>',`<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"><\/script>
+    <style>
+      body{margin:0;padding:18px;background:#eef1f5;font-family:Arial,sans-serif}
+      .download-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:center;gap:12px;padding:12px;margin:-18px -18px 18px;background:#172b49}
+      .download-toolbar button{border:0;border-radius:7px;padding:11px 20px;font-weight:700;cursor:pointer}
+      .download-now{background:#d7b45b;color:#17243a}.print-fallback{background:#fff;color:#17243a}
+      .preview-wrap{display:flex;justify-content:center;overflow:auto}
+      @media print{body{padding:0;background:#fff}.download-toolbar{display:none}.preview-wrap{display:block}}
+    </style></head>`)
+    .replace('<body><main class="cert" id="eho-certificate">','<body><div class="download-toolbar"><button class="download-now" onclick="downloadEhoPdf()">⬇ Download PDF</button><button class="print-fallback" onclick="window.print()">Print</button></div><div class="preview-wrap"><main class="cert" id="eho-certificate">')
+    .replace('</div></main></body></html>', `</div></main></div><script>
+      async function downloadEhoPdf(){
+        const button=document.querySelector(".download-now");
+        button.disabled=true;button.textContent="Preparing full-page high-quality PDF…";
+        try{
+          if(!window.html2canvas||!window.jspdf){throw new Error("PDF libraries did not load. Check internet connection and retry.");}
+          await document.fonts.ready;
+          const element=document.getElementById("eho-certificate");
+          for(const img of element.querySelectorAll("img")){if(img.decode){try{await img.decode()}catch(e){}}}
+          await new Promise(resolve=>setTimeout(resolve,250));
+          const canvas=await html2canvas(element,{
+            scale:3,useCORS:true,allowTaint:false,backgroundColor:"#ffffff",
+            width:element.scrollWidth,height:element.scrollHeight,
+            windowWidth:element.scrollWidth,windowHeight:element.scrollHeight,
+            logging:false
+          });
+          const {jsPDF}=window.jspdf;
+          const pdf=new jsPDF({orientation:"landscape",unit:"mm",format:"a4",compress:true});
+          const margin=9,pageW=297,pageH=210;
+          const drawW=pageW-margin*2,drawH=pageH-margin*2;
+          pdf.addImage(canvas.toDataURL("image/png"),"PNG",margin,margin,drawW,drawH,undefined,"FAST");
+          const scaleX=drawW/element.offsetWidth,scaleY=drawH/element.offsetHeight;
+          for(const link of element.querySelectorAll(".verify-link,.qr-wrap a")){
+            const rect=link.getBoundingClientRect(),base=element.getBoundingClientRect();
+            pdf.link(margin+(rect.left-base.left)*scaleX,margin+(rect.top-base.top)*scaleY,rect.width*scaleX,rect.height*scaleY,{url:link.href});
+          }
+          pdf.save(${JSON.stringify(String(r.certificate_id||'EHO-Certificate')+'.pdf')});
+          button.textContent="✓ PDF Downloaded";
+        }catch(error){
+          console.error(error);button.textContent="Download failed — retry";
+          alert("PDF could not be generated: "+error.message+"\\nPlease check your internet connection and try again.");
+        }finally{button.disabled=false;}
+      }
+    </script></body></html>`);
   w.document.open();w.document.write(html);w.document.close();
  };
  return <div className="certificate-workspace">
