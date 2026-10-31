@@ -472,7 +472,7 @@ function OfferLetterManager({supabase}){
   .section-title{font:700 9pt Georgia,serif;color:#806022;margin:3.5mm 0 1.5mm}
   .details{white-space:pre-wrap;overflow-wrap:anywhere;font:8.5pt/1.35 Arial,sans-serif;color:#26364f}
   .sign-area{margin-top:auto;padding-top:6mm;display:flex;justify-content:space-between;align-items:flex-end;gap:10mm}
-  .sign{width:68mm;border-top:1.2px solid #b08a3c;padding-top:2mm;font-size:8pt;line-height:1.4;color:#344054}
+  .sign{width:68mm;border-top:0;padding-top:0;font-size:8pt;line-height:1.4;color:#344054}.sign .signature-image,.sign .signature-script{margin:0 0 1.5mm;max-height:16mm}.sign .signature-rule{width:68mm;border-top:1.2px solid #b08a3c;margin:0 0 1.5mm}
   .sign b{font:700 10pt Georgia,serif;color:#26364f}.signature-image{display:block;max-width:42mm;max-height:16mm;object-fit:contain;object-position:left bottom;margin:0 0 1mm}.signature-script{font-family:'Segoe Script','Brush Script MT','Snell Roundhand',cursive;font-style:italic;font-size:23px;line-height:1.1;color:#172b49;margin:0 0 1mm}.sign .signatory-title{font-size:8pt;color:#344054}
   .stamp{font:700 7.5pt Arial,sans-serif;letter-spacing:1px;color:#806022;border:1px solid #c4a45e;padding:2.5mm 3.5mm;text-align:center}
   .foot{position:absolute;bottom:7mm;left:16mm;right:16mm;border-top:1px solid #c4a45e;padding-top:2mm;display:flex;justify-content:space-between;gap:5mm;font-size:7pt;color:#475467}
@@ -487,7 +487,7 @@ function OfferLetterManager({supabase}){
   <div class="section-title">Program Overview & Learning Activities</div><div class="details">${esc(r.details||'You will take part in guided learning activities and practical assignments relevant to the selected internship domain.')}</div>
   <p style="margin-top:5mm">You are expected to complete the assigned learning activities and project work within the stated internship period, follow professional and ethical practices, and submit work for review as instructed. Any certificate of completion will be subject to the program requirements and work actually completed.</p>
   <p>We wish you a productive and rewarding learning experience.</p></div>
-  <div class="sign-area"><div class="sign">${signatureMarkup+(r.signatory_name?'<b>'+esc(r.signatory_name)+'</b><br>':'<b>Authorized Signatory</b><br>')+'<span class="signatory-title">'+esc(r.signatory_title||'Authorized Signatory')+'</span><br>'+esc(r.issuer_name)}</div><div class="stamp">EHO<br>OFFICIAL OFFER</div></div>
+  <div class="sign-area"><div class="sign">\${signatureMarkup+'<div class="signature-rule"></div>'+(r.signatory_name?'<b>'+esc(r.signatory_name)+'</b><br>':'<b>Authorized Signatory</b><br>')+'<span class="signatory-title">'+esc(r.signatory_title||'Authorized Signatory')+'</span><br>'+esc(r.issuer_name)}</div><div class="stamp">EHO<br>OFFICIAL OFFER</div></div>
   </div><footer class="foot"><span>${esc(r.issuer_name)} · Contact: ethicalhackingorganizations3@gmail.com</span><b>${esc(r.offer_letter_id)}</b></footer></main><script>
   window.addEventListener("load",async()=>{try{await Promise.all(Array.from(document.images).map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;setTimeout(resolve,5000)})));}catch(e){}setTimeout(()=>{window.focus();window.print();},500);});
   </script></body></html>`;
