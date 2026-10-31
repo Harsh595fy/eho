@@ -221,7 +221,71 @@ function CertificateManager({supabase}){
  const startEdit=(r)=>{setEditing(r.certificate_id);setEditForm({recipient_name:r.recipient_name||'',certificate_title:r.certificate_title||'Certificate of Achievement',program_name:r.program_name||'',issue_date:r.issue_date||todayLocal(),completion_date:r.completion_date||'',issuer_name:r.issuer_name||'EHO — Ethical Hacking Organizations',signatory_name:r.signatory_name||'',grade:r.grade||'',details:r.details||''});setNotice('');};
  const saveEdit=async(e)=>{e.preventDefault();if(!editing||!editForm)return;setBusy(true);setNotice('');try{const {data,error}=await supabase.rpc('update_eho_certificate',{p_certificate_id:editing,p_recipient_name:editForm.recipient_name.trim(),p_certificate_title:editForm.certificate_title.trim(),p_program_name:editForm.program_name.trim(),p_issue_date:editForm.issue_date,p_completion_date:editForm.completion_date||null,p_issuer_name:editForm.issuer_name.trim(),p_signatory_name:editForm.signatory_name.trim()||null,p_grade:editForm.grade.trim()||null,p_details:editForm.details.trim()||null});if(error)throw error;if(data!==true)throw new Error('The database did not confirm the certificate update.');setEditing(null);setEditForm(null);setNotice('Certificate updated. Its original ID, QR verification link and status were preserved.');await load();}catch(err){console.error('[EHO admin] Certificate update failed:',err);if(mounted.current)setNotice('Update failed: '+problemText(describeSupabaseError(err,'certificate update')),'error');}finally{if(mounted.current)setBusy(false)}};
  const revokeCertificate=async()=>{if(!revoke)return;if(revoke.reason.trim().length<5){setNotice('Please enter a revocation reason of at least 5 characters.','error');return;}setBusy(true);try{const {error}=await supabase.rpc('revoke_eho_certificate',{p_certificate_id:revoke.id,p_reason:revoke.reason.trim()});if(!mounted.current)return;if(error){console.error('[EHO admin] Revocation failed:',error);setNotice('Revocation failed: '+problemText(describeSupabaseError(error,'certificate revocation')),'error');return;}setRevoke(null);setNotice('Certificate revoked. Public verification will now show the revoked status.');await load();}catch(err){console.error('[EHO admin] Revocation failed:',err);if(mounted.current)setNotice('Revocation failed: '+problemText(describeSupabaseError(err,'certificate revocation')),'error');}finally{if(mounted.current)setBusy(false)}};
- const certificateHtml=(r)=>{const verifyUrl=`${window.location.origin}/verify/${encodeURIComponent(r.certificate_id)}`;return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(r.certificate_id)} — EHO Certificate</title><style>@page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{font-family:Georgia,serif;color:#14213d;margin:0}.cert{min-height:180mm;border:8px double #b99a43;padding:22mm 18mm;text-align:center;position:relative}.logo{width:30mm;height:30mm;display:block;margin:0 auto 6px}.brand{font:700 17px Arial;letter-spacing:5px;color:#9c7a23}.kicker{font:12px Arial;letter-spacing:4px;margin-top:20px}.title{font-size:38px;margin:18px 0}.name{font-size:32px;color:#9c7a23;border-bottom:1px solid #c7b16f;display:inline-block;padding:0 28px 8px}.text{font-size:16px;line-height:1.7}.meta{font:12px Arial;margin-top:25px;display:flex;justify-content:space-between;text-align:left}.id{font:12px Arial;margin-top:18px}.qr{position:absolute;right:12mm;bottom:12mm;width:28mm;height:28mm}.note{font:10px Arial;margin-top:18px;color:#666;white-space:pre-wrap}.signature-image{display:block;max-width:42mm;max-height:18mm;object-fit:contain;margin:0 0 2px auto}.signature-script{font-family:'Segoe Script','Brush Script MT','Snell Roundhand',cursive;font-style:italic;font-size:27px;line-height:1.15;color:#172b49;text-align:right;margin:0 0 3px}@media print{button{display:none}}</style></head><body><div class="cert"><img class="logo" alt="EHO logo" src="${window.location.origin}/eho-logo.png"><div class="brand">EHO</div><div class="kicker">ETHICAL HACKING ORGANIZATIONS</div><h1 class="title">${escapeHtml(r.certificate_title||'Certificate')}</h1><p class="text">This certificate is presented to</p><div class="name">${escapeHtml(r.recipient_name)}</div><p class="text">in recognition of achievement in <b>${escapeHtml(r.program_name)}</b>${r.completion_date?`<br>Achievement Date: ${escapeHtml(r.completion_date)}`:''}.</p><div class="meta"><div>Certificate Date: ${escapeHtml(r.issue_date)}<br>Issuer: ${escapeHtml(r.issuer_name||'EHO')}</div><div>${r.signatory_name?(signatureSettings.mode==='image'&&signatureSettings.image_data_url?`<img class="signature-image" alt="Authorized signature" src="${signatureSettings.image_data_url}">`:`<div class="signature-script" style="${signatureSettings.font_style==='italic'?'font-family:Georgia,serif;font-style:italic;':'font-family:Segoe Script,Brush Script MT,cursive;font-style:italic;'}">${escapeHtml(r.signatory_name)}</div>`)+`Authorized signatory: ${escapeHtml(r.signatory_name)}`:''}${r.grade?`<br>Grade/score: ${escapeHtml(r.grade)}`:''}</div></div>${r.details?`<div class="note">${escapeHtml(r.details)}</div>`:''}<div class="id">Certificate ID: <b>${escapeHtml(r.certificate_id)}</b></div><img class="qr" alt="QR code for certificate verification" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=${encodeURIComponent(verifyUrl)}"><div class="note">Scan the QR code or verify at ${escapeHtml(verifyUrl)}. Authenticity is determined by the official EHO verification record.</div></div><script>window.onload=()=>window.print()</script></body></html>`};
+ const certificateHtml=(r)=>{
+  const verifyUrl=`${window.location.origin}/verify/${encodeURIComponent(r.certificate_id)}`;
+  const rawDetails=String(r.details||'');
+  const durationMatch=rawDetails.match(/(?:^|\\n)Internship Duration:\\s*([^\\n]+)/i);
+  const duration=durationMatch?.[1]?.trim()||'';
+  const extraDetails=rawDetails.replace(/(?:^|\\n)Internship Duration:\\s*[^\\n]+/i,'').trim();
+  const signature= r.signatory_name
+    ? (signatureSettings.mode==='image'&&signatureSettings.image_data_url
+      ? `<img class="signature-image" alt="Authorized signature" src="${signatureSettings.image_data_url}">`
+      : `<div class="signature-script" style="${signatureSettings.font_style==='italic'?'font-family:Georgia,serif;font-style:italic;':'font-family:Segoe Script,Brush Script MT,cursive;font-style:italic;'}">${escapeHtml(r.signatory_name)}</div>`)
+    : '';
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(r.certificate_id)} — EHO Certificate</title>
+  <style>
+    @page{size:A4 landscape;margin:9mm}
+    *{box-sizing:border-box}
+    body{margin:0;background:#fff;color:#17243a;font-family:Georgia,'Times New Roman',serif}
+    .cert{height:192mm;position:relative;overflow:hidden;border:2px solid #b49448;padding:10mm 15mm 8mm;text-align:center;background:linear-gradient(135deg,#fff 0%,#fffdf7 100%)}
+    .cert:before{content:"";position:absolute;inset:3mm;border:1px solid #d7c48f;pointer-events:none}
+    .content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center}
+    .logo{width:20mm;height:20mm;object-fit:contain;margin:0 auto 2mm}
+    .brand{font:700 15px Arial,sans-serif;letter-spacing:6px;color:#9b7b35}
+    .kicker{font:9px Arial,sans-serif;letter-spacing:3.5px;color:#647086;margin-top:2mm}
+    .rule{width:42mm;height:1px;background:#c3a45b;margin:4mm auto 3mm}
+    .eyebrow{font:10px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#69758a;margin:0}
+    .title{font-size:clamp(25px,3vw,34px);line-height:1.15;color:#1d3557;margin:3mm 0 5mm;max-width:95%;font-weight:700}
+    .presented{font-size:14px;color:#5c6677;margin:0 0 2mm}
+    .name{font-size:30px;font-weight:600;color:#9b7b35;border-bottom:1px solid #c9b274;padding:0 22mm 2mm;display:inline-block;max-width:90%}
+    .achievement{font-size:14px;line-height:1.5;color:#3f4c60;margin:4mm 0 0;max-width:90%}
+    .achievement b{color:#203b60}
+    .date-line{font:11px Arial,sans-serif;color:#687386;margin:2mm 0 0}
+    .duration{display:inline-block;margin:4mm auto 0;padding:2.2mm 8mm;border:1px solid #d8c28a;border-radius:3mm;background:#fbf7eb;color:#725a24;font:700 11px Arial,sans-serif;letter-spacing:.5px}
+    .details{font:11px Arial,sans-serif;line-height:1.45;color:#667085;margin:3mm auto 0;max-width:82%;white-space:pre-wrap}
+    .spacer{flex:1;min-height:4mm}
+    .footer{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:8mm;border-top:1px solid #e0d5b8;padding-top:4mm;text-align:left}
+    .footer-label{font:9px Arial,sans-serif;color:#7b8492;text-transform:uppercase;letter-spacing:1px;margin-bottom:1mm}
+    .footer-value{font:10px Arial,sans-serif;color:#293a54;line-height:1.5}
+    .signature{justify-self:center;text-align:center;min-width:48mm}
+    .signature-image{display:block;max-width:38mm;max-height:13mm;object-fit:contain;margin:0 auto 1mm}
+    .signature-script{font-family:'Segoe Script','Brush Script MT','Snell Roundhand',cursive;font-style:italic;font-size:24px;line-height:1.1;color:#172b49;margin:0 auto 1mm}
+    .sign-line{width:48mm;border-top:1px solid #b9a36e;margin:1mm auto}
+    .qr-wrap{justify-self:end;text-align:center}
+    .qr{width:23mm;height:23mm;display:block;margin:0 auto 1mm}
+    .qr-caption{font:8px Arial,sans-serif;color:#697386}
+    .certificate-id{font:9px Arial,sans-serif;color:#45536a;margin-top:3mm;letter-spacing:.3px}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style></head><body><main class="cert"><div class="content">
+    <img class="logo" alt="EHO logo" src="${window.location.origin}/eho-logo.png">
+    <div class="brand">EHO</div><div class="kicker">ETHICAL HACKING ORGANIZATIONS</div>
+    <div class="rule"></div><p class="eyebrow">Certificate of Achievement</p>
+    <h1 class="title">${escapeHtml(r.certificate_title||'Certificate')}</h1>
+    <p class="presented">This certificate is proudly presented to</p>
+    <div class="name">${escapeHtml(r.recipient_name)}</div>
+    <p class="achievement">In recognition of successful completion of <b>${escapeHtml(r.program_name)}</b>.</p>
+    ${r.completion_date?`<p class="date-line">Achievement date: ${escapeHtml(r.completion_date)}</p>`:''}
+    ${duration?`<div class="duration">PROGRAM DURATION · ${escapeHtml(duration)}</div>`:''}
+    ${extraDetails?`<div class="details">${escapeHtml(extraDetails)}</div>`:''}
+    <div class="spacer"></div>
+    <section class="footer">
+      <div><div class="footer-label">Issued by</div><div class="footer-value"><b>${escapeHtml(r.issuer_name||'EHO')}</b><br>Certificate date: ${escapeHtml(r.issue_date)}</div></div>
+      <div class="signature">${signature}<div class="sign-line"></div><div class="footer-value"><b>${escapeHtml(r.signatory_name||'Authorized Signatory')}</b><br>Authorized signatory</div>${r.grade?`<div class="footer-value">Grade / score: ${escapeHtml(r.grade)}</div>`:''}</div>
+      <div class="qr-wrap"><img class="qr" alt="QR code for certificate verification" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=${encodeURIComponent(verifyUrl)}"><div class="qr-caption">Scan to verify authenticity</div></div>
+    </section>
+    <div class="certificate-id">CERTIFICATE ID: <b>${escapeHtml(r.certificate_id)}</b> &nbsp;·&nbsp; Verify: ${escapeHtml(verifyUrl)}</div>
+  </div></main><script>window.onload=()=>window.print()</script></body></html>`;
+};
  const downloadCertificate=(r)=>{const w=window.open('','_blank');if(!w){setNotice('Allow pop-ups to print/download the certificate.','error');return;}w.document.write(certificateHtml(r));w.document.close()};
  return <div className="certificate-workspace">
   <div className="admin-stats"><div><span>Total certificates</span><b>{rows.length}</b><small>database records</small></div><div><span>Active</span><b>{rows.filter(r=>r.status==='issued').length}</b><small>currently valid</small></div><div><span>Revoked</span><b>{rows.filter(r=>r.status==='revoked').length}</b><small>retained for audit</small></div></div>
