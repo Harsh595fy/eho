@@ -448,7 +448,7 @@ function OfferLetterManager({supabase}){
   <p>We wish you a productive and rewarding learning experience.</p></div>
   <div class="sign-area"><div class="sign">'+(r.signatory_name?'<b>'+esc(r.signatory_name)+'</b><br>':'<b>Authorized Signatory</b><br>')+'Authorized Signatory<br>'+esc(r.issuer_name)+'</div><div class="stamp">EHO<br>OFFICIAL OFFER</div></div>
   </div><footer class="foot"><span>'+esc(r.issuer_name)+'</span><b>'+esc(r.offer_letter_id)+'</b></footer></main><script>
-  window.addEventListener('load',async()=>{try{await Promise.all(Array.from(document.images).map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;setTimeout(resolve,5000)})));}catch(e){}setTimeout(()=>{window.focus();window.print();},500);});
+  window.addEventListener("load",async()=>{try{await Promise.all(Array.from(document.images).map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;setTimeout(resolve,5000)})));}catch(e){}setTimeout(()=>{window.focus();window.print();},500);});
   </script></body></html>';
   w.document.open();w.document.write(html);w.document.close();
  };
