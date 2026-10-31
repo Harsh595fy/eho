@@ -307,7 +307,7 @@ function CertificateManager({supabase}){
     @media print{body{padding:0;background:#fff}.download-toolbar{display:none}.preview-wrap{display:block}}
   </style></head>`)
   .replace('<body><main class="cert" id="eho-certificate">','<body><div class="download-toolbar"><button class="download-now" onclick="downloadEhoPdf()">⬇ Download PDF</button><button class="print-fallback" onclick="window.print()">Print</button></div><div class="preview-wrap"><main class="cert" id="eho-certificate">')
-  .replace('</div></main></body></html>', '</div></main></div><script>
+  .replace('</div></main></body></html>', `</div></main></div><script>
     async function downloadEhoPdf(){
       const button=document.querySelector(".download-now");
       if(!window.html2pdf){button.textContent="Loading PDF tool…";setTimeout(()=>button.textContent="⬇ Download PDF",1200);return;}
@@ -330,7 +330,7 @@ function CertificateManager({supabase}){
       finally{button.disabled=false;}
     }
     window.addEventListener("load",()=>{const b=document.querySelector(".download-now");if(b)b.disabled=false;});
-  </script></body></html>');
+  </script></body></html>`);
   w.document.open();w.document.write(html);w.document.close();
  };
  return <div className="certificate-workspace">
