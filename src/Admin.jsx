@@ -299,20 +299,34 @@ function CertificateManager({supabase}){
   if(!w){setNotice('Pop-ups are blocked. Allow pop-ups for this site, then click Download PDF again.','error');return;}
   const html=certificateHtml(r)
     .replace('</head>',`<style>
-      @page{size:297mm 210mm landscape;margin:0}
+      @page{size:A4 landscape;margin:0}
       @media print{
-        html,body{width:297mm!important;height:210mm!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
-        .cert{box-sizing:border-box!important;width:297mm!important;height:210mm!important;max-width:none!important;margin:0!important;padding:10mm 15mm 8mm!important;overflow:hidden!important;break-inside:avoid!important;page-break-inside:avoid!important}
+        html,body{
+          width:297mm!important;min-width:297mm!important;max-width:297mm!important;
+          height:210mm!important;min-height:210mm!important;margin:0!important;padding:0!important;
+          overflow:hidden!important;background:#fff!important;
+        }
+        body{display:block!important}
+        .cert{
+          box-sizing:border-box!important;display:block!important;position:relative!important;
+          width:297mm!important;min-width:297mm!important;max-width:297mm!important;
+          height:210mm!important;min-height:210mm!important;max-height:210mm!important;
+          margin:0!important;padding:10mm 15mm 8mm!important;overflow:hidden!important;
+          break-inside:avoid!important;page-break-inside:avoid!important;
+        }
         .content{height:100%!important}
-        .title{font-size:27px!important;line-height:1.12!important;max-width:96%!important;margin:2mm 0 3mm!important}
-        .presented{margin-bottom:1mm!important}
-        .name{font-size:27px!important;padding-bottom:1mm!important}
-        .achievement{margin-top:2mm!important;font-size:12px!important}
-        .duration{margin-top:2mm!important;padding:1.6mm 7mm!important}
-        .details{margin-top:2mm!important;font-size:10px!important;line-height:1.35!important}
+        .title{font-size:27pt!important;line-height:1.12!important;max-width:96%!important;margin:2mm 0 3mm!important}
+        .presented{font-size:11pt!important;margin-bottom:1mm!important}
+        .name{font-size:24pt!important;padding-bottom:1mm!important}
+        .achievement{margin-top:2mm!important;font-size:10pt!important}
+        .duration{margin-top:2mm!important;padding:1.6mm 7mm!important;font-size:8.5pt!important}
+        .details{margin-top:2mm!important;font-size:8.5pt!important;line-height:1.35!important}
         .spacer{min-height:2mm!important}
         .footer{padding-top:3mm!important;gap:6mm!important}
+        .footer-label{font-size:7pt!important}
+        .footer-value{font-size:8pt!important}
         .qr{width:21mm!important;height:21mm!important}
+        .qr-caption,.certificate-id{font-size:7pt!important}
         *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
       }
     </style></head>`)
@@ -320,18 +334,17 @@ function CertificateManager({supabase}){
       window.addEventListener('load',async()=>{
         try{
           if(document.fonts&&document.fonts.ready)await document.fonts.ready;
-          const images=Array.from(document.images);
-          await Promise.all(images.map(img=>{
+          await Promise.all(Array.from(document.images).map(img=>{
             if(img.complete)return Promise.resolve();
-            return new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;setTimeout(resolve,4000)});
+            return new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;setTimeout(resolve,5000)});
           }));
         }catch(e){}
-        setTimeout(()=>{window.focus();window.print();},500);
+        setTimeout(()=>{window.focus();window.print();},600);
       });
     </script></body></html>`);
   w.document.open();w.document.write(html);w.document.close();
  };
- const deleteCertificate=async(r)=>{
+const deleteCertificate=async(r)=>{
   const confirmed=window.confirm(`Permanently delete the certificate for ${r.recipient_name} (ID: ${r.certificate_id})? This cannot be undone and the public verification record will be removed.`);
   if(!confirmed)return;
   setBusy(true);setNotice('');
