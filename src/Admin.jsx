@@ -245,36 +245,41 @@ function CertificateManager({supabase}){
   <style>
     @page{size:A4 landscape;margin:9mm}
     *{box-sizing:border-box}
-    body{margin:0;background:#fff;color:#17243a;font-family:Georgia,'Times New Roman',serif}
-    .cert{width:279mm;height:192mm;position:relative;overflow:hidden;border:2px solid #b49448;padding:10mm 15mm 8mm;text-align:center;background:linear-gradient(135deg,#fff 0%,#fffdf7 100%)}
-    .cert:before{content:"";position:absolute;inset:3mm;border:1px solid #d7c48f;pointer-events:none}
+    body{margin:0;background:#fff;color:#111827;font-family:Georgia,'Times New Roman',serif}
+    .cert{width:279mm;height:192mm;position:relative;overflow:hidden;border:1.5px solid #667085;padding:10mm 15mm 8mm;text-align:center;background:#fff}
+    .cert:before{content:"";position:absolute;inset:3mm;border:1px solid #aab2bd;pointer-events:none}
     .content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center}
     .logo{width:20mm;height:20mm;object-fit:contain;margin:0 auto 2mm}
-    .brand{font:700 15px Arial,sans-serif;letter-spacing:6px;color:#9b7b35}
-    .kicker{font:9px Arial,sans-serif;letter-spacing:3.5px;color:#34445f;margin-top:2mm;font-weight:700}
-    .rule{width:42mm;height:1px;background:#c3a45b;margin:4mm auto 3mm}
-    .eyebrow{font:10px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#69758a;margin:0}
-    .title{font-size:clamp(25px,3vw,34px);line-height:1.15;color:#1d3557;margin:3mm 0 5mm;max-width:95%;font-weight:700}
-    .presented{font-size:14px;color:#5c6677;margin:0 0 2mm}
-    .name{font-size:30px;font-weight:600;color:#9b7b35;border-bottom:1px solid #c9b274;padding:0 22mm 2mm;display:inline-block;max-width:90%}
-    .achievement{font-size:14px;line-height:1.5;color:#3f4c60;margin:4mm 0 0;max-width:90%}
-    .achievement b{color:#203b60}
-    .date-line{font:11px Arial,sans-serif;color:#687386;margin:2mm 0 0}
-    .duration{display:inline-block;margin:4mm auto 0;padding:2.2mm 8mm;border:1px solid #d8c28a;border-radius:3mm;background:#fbf7eb;color:#725a24;font:700 11px Arial,sans-serif;letter-spacing:.5px}
-    .details{font:11px Arial,sans-serif;line-height:1.5;color:#26364f;margin:3mm auto 0;max-width:82%;white-space:pre-wrap;font-weight:600}
+    .brand{font:700 15px Arial,sans-serif;letter-spacing:6px;color:#27364b}
+    .kicker{font:700 9px Arial,sans-serif;letter-spacing:3.5px;color:#27364b;margin-top:2mm}
+    .rule{width:42mm;height:1px;background:#667085;margin:4mm auto 3mm}
+    .eyebrow{font:700 10px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#475467;margin:0}
+    .title{font-size:clamp(25px,3vw,34px);line-height:1.15;color:#172b49;margin:3mm 0 5mm;max-width:95%;font-weight:700}
+    .presented{font-size:14px;color:#344054;margin:0 0 2mm}
+    .name{font-size:30px;font-weight:700;color:#26364f;border-bottom:1px solid #667085;padding:0 22mm 2mm;display:inline-block;max-width:90%}
+    .achievement{font-size:14px;line-height:1.5;color:#1f2937;margin:4mm 0 0;max-width:90%}
+    .achievement b{color:#172b49}
+    .date-line{font:11px Arial,sans-serif;color:#344054;margin:2mm 0 0}
+    .duration{display:inline-block;margin:4mm auto 0;padding:2.2mm 8mm;border:1px solid #667085;border-radius:3mm;background:#fff;color:#26364f;font:700 11px Arial,sans-serif;letter-spacing:.5px}
+    .details{font:600 11px Arial,sans-serif;line-height:1.5;color:#1f2937;margin:3mm auto 0;max-width:82%;white-space:pre-wrap}
     .spacer{flex:1;min-height:4mm}
-    .footer{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:8mm;border-top:1px solid #e0d5b8;padding-top:4mm;text-align:left}
-    .footer-label{font:9px Arial,sans-serif;color:#43516a;text-transform:uppercase;letter-spacing:1px;margin-bottom:1mm;font-weight:700}
-    .footer-value{font:10px Arial,sans-serif;color:#182b47;line-height:1.5;font-weight:500}
+    .footer{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:8mm;border-top:1px solid #98a2b3;padding-top:4mm;text-align:left}
+    .footer-label{font:700 9px Arial,sans-serif;color:#344054;text-transform:uppercase;letter-spacing:1px;margin-bottom:1mm}
+    .footer-value{font:10px Arial,sans-serif;color:#111827;line-height:1.5;font-weight:600}
     .signature{justify-self:center;text-align:center;min-width:48mm}
     .signature-image{display:block;max-width:38mm;max-height:13mm;object-fit:contain;margin:0 auto 1mm}
     .signature-script{font-family:'Segoe Script','Brush Script MT','Snell Roundhand',cursive;font-style:italic;font-size:24px;line-height:1.1;color:#172b49;margin:0 auto 1mm}
-    .sign-line{width:48mm;border-top:1px solid #b9a36e;margin:1mm auto}
+    .sign-line{width:48mm;border-top:1px solid #667085;margin:1mm auto}
     .qr-wrap{justify-self:end;text-align:center}
     .qr{width:23mm;height:23mm;display:block;margin:0 auto 1mm}
-    .qr-caption{font:8px Arial,sans-serif;color:#394861;font-weight:600}
-    .certificate-id{font:9px Arial,sans-serif;color:#45536a;margin-top:3mm;letter-spacing:.3px}.verify-link{color:#1d4e89;text-decoration:underline;font-weight:700;cursor:pointer}
-    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+    .qr-caption{font:600 8px Arial,sans-serif;color:#344054}
+    .certificate-id{font:600 9px Arial,sans-serif;color:#344054;margin-top:3mm;letter-spacing:.3px}.verify-link{color:#173f6b;text-decoration:underline;font-weight:700;cursor:pointer}
+    @media print{
+      html,body{background:#fff!important;color:#111827!important}
+      .cert{background:#fff!important;border-color:#667085!important}
+      .cert:before{border-color:#aab2bd!important}
+      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    }
   </style></head><body><main class="cert" id="eho-certificate"><div class="content">
     <img class="logo" alt="EHO logo" src="${window.location.origin}/eho-logo.png">
     <div class="brand">EHO</div><div class="kicker">ETHICAL HACKING ORGANIZATIONS</div>
@@ -289,7 +294,7 @@ function CertificateManager({supabase}){
     <section class="footer">
       <div><div class="footer-label">Issued by</div><div class="footer-value"><b>${escapeHtml(r.issuer_name||'EHO')}</b><br>Internship start date: ${escapeHtml(r.issue_date)}</div></div>
       <div class="signature">${signature}<div class="sign-line"></div><div class="footer-value"><b>${escapeHtml(r.signatory_name||'Authorized Signatory')}</b><br>Authorized signatory</div>${r.grade?`<div class="footer-value">Grade / score: ${escapeHtml(r.grade)}</div>`:''}</div>
-      <div class="qr-wrap"><a href="${escapeHtml(verifyUrl)}" target="_blank" rel="noopener noreferrer" title="Open online certificate verification"><img class="qr" alt="QR code for certificate verification" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=${encodeURIComponent(verifyUrl)}"></a><div class="qr-caption">Scan or click to verify online</div></div>
+      <div class="qr-wrap"><a href="${escapeHtml(verifyUrl)}" target="_blank" rel="noopener noreferrer" title="Open online certificate verification"><img class="qr" alt="QR code for certificate verification" src="https://api.qrserver.com/v1/create-qr-code/?size=600x600&amp;data=${encodeURIComponent(verifyUrl)}"></a><div class="qr-caption">Scan or click to verify online</div></div>
     </section>
     <div class="certificate-id">CERTIFICATE ID: <b>${escapeHtml(r.certificate_id)}</b> &nbsp;·&nbsp; <a class="verify-link" href="${escapeHtml(verifyUrl)}" target="_blank" rel="noopener noreferrer">Verify Certificate Online</a></div>
   </div></main></body></html>`;
@@ -315,18 +320,18 @@ function CertificateManager({supabase}){
           break-inside:avoid!important;page-break-inside:avoid!important;
         }
         .content{height:100%!important}
-        .title{font-size:27pt!important;line-height:1.12!important;max-width:96%!important;margin:2mm 0 3mm!important}
-        .presented{font-size:11pt!important;margin-bottom:1mm!important}
-        .name{font-size:24pt!important;padding-bottom:1mm!important}
-        .achievement{margin-top:2mm!important;font-size:10pt!important}
-        .duration{margin-top:2mm!important;padding:1.6mm 7mm!important;font-size:8.5pt!important}
-        .details{margin-top:2mm!important;font-size:8.5pt!important;line-height:1.35!important}
+        .title{font-size:27pt!important;color:#172b49!important;line-height:1.12!important;max-width:96%!important;margin:2mm 0 3mm!important}
+        .presented{font-size:11pt!important;color:#26364f!important;margin-bottom:1mm!important}
+        .name{font-size:24pt!important;color:#26364f!important;border-color:#667085!important;padding-bottom:1mm!important}
+        .achievement{margin-top:2mm!important;font-size:10pt!important;color:#111827!important}
+        .duration{margin-top:2mm!important;background:#fff!important;color:#26364f!important;border-color:#667085!important;padding:1.6mm 7mm!important;font-size:8.5pt!important}
+        .details{margin-top:2mm!important;color:#111827!important;font-size:8.5pt!important;line-height:1.35!important}
         .spacer{min-height:2mm!important}
-        .footer{padding-top:3mm!important;gap:6mm!important}
-        .footer-label{font-size:7pt!important}
-        .footer-value{font-size:8pt!important}
+        .footer{padding-top:3mm!important;border-color:#98a2b3!important;gap:6mm!important}
+        .footer-label{font-size:7.5pt!important;color:#26364f!important}
+        .footer-value{font-size:8.5pt!important;color:#111827!important}
         .qr{width:21mm!important;height:21mm!important}
-        .qr-caption,.certificate-id{font-size:7pt!important}
+        .qr-caption,.certificate-id{font-size:7.5pt!important;color:#26364f!important}
         *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
       }
     </style></head>`)
