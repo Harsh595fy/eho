@@ -54,6 +54,6 @@ end;
 $$;
 
 revoke all on function public.update_eho_offer_letter(text,text,text,text,text,date,date,date,text,text,text) from public, anon;
-grant execute on function public.update_eho_offer_letter(text,text,text,text,date,date,date,text,text,text) to authenticated;
+grant execute on function public.update_eho_offer_letter(text,text,text,text,text,date,date,date,text,text,text) to authenticated;
 
 notify pgrst, 'reload schema';
