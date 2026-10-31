@@ -336,7 +336,7 @@ function CertificateManager({supabase}){
       }
     </style></head>`)
     .replace('</body></html>', `<script>
-      window.addEventListener('load',async()=>{
+      window.addEventListener("load",async()=>{
         try{
           if(document.fonts&&document.fonts.ready)await document.fonts.ready;
           await Promise.all(Array.from(document.images).map(img=>{
