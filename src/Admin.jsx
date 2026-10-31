@@ -296,26 +296,40 @@ function CertificateManager({supabase}){
 };
  const downloadCertificate=(r)=>{
   const w=window.open('','_blank');
-  if(!w){setNotice('Please allow pop-ups to open the certificate PDF dialog.','error');return;}
+  if(!w){setNotice('Pop-ups are blocked. Allow pop-ups for eho-delta.vercel.app and click Download PDF again.','error');return;}
   const html=certificateHtml(r)
     .replace('</head>',`<style>
-      body{margin:0;padding:16px;background:#eef1f5;font-family:Arial,sans-serif}
-      .download-toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:center;gap:12px;padding:12px;margin:-16px -16px 16px;background:#172b49}
-      .download-toolbar button{border:0;border-radius:7px;padding:12px 22px;font-weight:700;cursor:pointer;font-size:14px}
-      .download-now{background:#d7b45b;color:#17243a}.close-preview{background:#fff;color:#17243a}
-      .preview-wrap{display:flex;justify-content:center;overflow:auto}
       @page{size:A4 landscape;margin:9mm}
       @media print{
         html,body{margin:0!important;padding:0!important;background:#fff!important}
-        .download-toolbar{display:none!important}
-        .preview-wrap{display:block!important;overflow:visible!important}
         .cert{width:279mm!important;height:192mm!important;break-inside:avoid;page-break-inside:avoid}
         *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
       }
     </style></head>`)
-    .replace('<body><main class="cert" id="eho-certificate">','<body><div class="download-toolbar"><button class="download-now" onclick="window.print()">⬇ Download / Save as PDF</button><button class="close-preview" onclick="window.close()">Close</button></div><div class="preview-wrap"><main class="cert" id="eho-certificate">')
-    .replace('</div></main></body></html>','</div></main></div></body></html>');
+    .replace('</body></html>', `<script>
+      window.addEventListener('load',()=>{
+        setTimeout(()=>{
+          window.focus();
+          window.print();
+        },700);
+      });
+    </script></body></html>`);
   w.document.open();w.document.write(html);w.document.close();
+ };
+ const deleteCertificate=async(r)=>{
+  const confirmed=window.confirm(`Permanently delete the certificate for ${r.recipient_name} (ID: ${r.certificate_id})? This cannot be undone and its public verification record will be removed.`);
+  if(!confirmed)return;
+  setBusy(true);setNotice('');
+  try{
+    const {data,error}=await supabase.rpc('delete_eho_certificate',{p_certificate_id:r.certificate_id});
+    if(error)throw error;
+    if(data!==true)throw new Error('The database did not confirm deletion.');
+    setNotice(`Certificate ${r.certificate_id} permanently deleted.`);
+    await load();
+  }catch(err){
+    console.error('[EHO admin] Certificate deletion failed:',err);
+    if(mounted.current)setNotice('Delete failed: '+problemText(describeSupabaseError(err,'certificate deletion')),'error');
+  }finally{if(mounted.current)setBusy(false)}
  };
  return <div className="certificate-workspace">
   <div className="admin-stats"><div><span>Total certificates</span><b>{rows.length}</b><small>database records</small></div><div><span>Active</span><b>{rows.filter(r=>r.status==='issued').length}</b><small>currently valid</small></div><div><span>Revoked</span><b>{rows.filter(r=>r.status==='revoked').length}</b><small>retained for audit</small></div></div>
@@ -333,7 +347,7 @@ function CertificateManager({supabase}){
   </div><div className="admin-form-actions"><button className="admin-primary" disabled={busy}>{busy?'Issuing…':'Issue certificate'}</button></div></form></div>
   <div className="admin-panel-card"><h2>Authorized signature</h2><p className="admin-help">Set the manager's signature once. This changes only the signature shown on printed certificates; the certificate layout, IDs and QR verification remain unchanged.</p><div className="admin-form"><label>Signature type<select value={signatureSettings.mode} onChange={e=>setSignatureSettings(s=>({...s,mode:e.target.value}))}><option value="typed">Stylish name (script font)</option><option value="image">Upload signature image</option></select></label>{signatureSettings.mode==='image'?<label>Signature image (PNG/JPG/WebP, max 500 KB)<input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleSignatureFile}/></label>:<label>Font style<select value={signatureSettings.font_style} onChange={e=>setSignatureSettings(s=>({...s,font_style:e.target.value}))}><option value="script">Handwritten script</option><option value="italic">Elegant italic</option></select></label>}</div>{signatureSettings.mode==='image'&&signatureSettings.image_data_url&&<div className="admin-row"><img src={signatureSettings.image_data_url} alt="Signature preview" style={{maxWidth:220,maxHeight:90,objectFit:'contain'}}/><button type="button" className="icon-btn danger" onClick={()=>setSignatureSettings(s=>({...s,image_data_url:''}))}>Remove image</button></div>}{signatureNotice&&<div className="admin-notice" role="status">{signatureNotice}</div>}<div className="admin-form-actions"><button type="button" className="admin-primary" disabled={signatureBusy||(signatureSettings.mode==='image'&&!signatureSettings.image_data_url)} onClick={saveSignatureSettings}>{signatureBusy?'Saving…':'Save signature settings'}</button></div></div>
   <div className="admin-panel-card"><h2>Certificate records</h2><div className="certificate-filters"><input aria-label="Search certificates" placeholder="Search ID, recipient or program" value={query} onChange={e=>setQuery(e.target.value)}/><select aria-label="Filter status" value={status} onChange={e=>setStatus(e.target.value)}><option value="all">All statuses</option><option value="issued">Active</option><option value="revoked">Revoked</option></select></div>
-  {loading?<p>Loading certificate records…</p>:filtered.length===0?<p className="admin-help">No certificate records match this filter.</p>:filtered.map(r=><div className="admin-row cert-row" key={r.certificate_id}><div><b>{r.recipient_name}</b><small>{r.certificate_id} · {r.program_name} · Internship Start: {r.issue_date}</small>{r.status==='revoked'&&<small>Revoked: {r.revocation_reason||'Reason not available'}</small>}</div><span className={'admin-pill '+(r.status==='issued'?'green':'')}>{r.status}</span><button className="icon-btn" onClick={()=>startEdit(r)}><Pencil size={14}/> Edit</button><button className="icon-btn" onClick={()=>downloadCertificate(r)}>⬇ Download PDF</button>{r.status==='issued'&&<button className="icon-btn danger" onClick={()=>setRevoke({id:r.certificate_id,reason:''})}>Revoke</button>}</div>)}
+  {loading?<p>Loading certificate records…</p>:filtered.length===0?<p className="admin-help">No certificate records match this filter.</p>:filtered.map(r=><div className="admin-row cert-row" key={r.certificate_id}><div><b>{r.recipient_name}</b><small>{r.certificate_id} · {r.program_name} · Internship Start: {r.issue_date}</small>{r.status==='revoked'&&<small>Revoked: {r.revocation_reason||'Reason not available'}</small>}</div><span className={'admin-pill '+(r.status==='issued'?'green':'')}>{r.status}</span><button className="icon-btn" onClick={()=>startEdit(r)}><Pencil size={14}/> Edit</button><button className="icon-btn" disabled={busy} onClick={()=>downloadCertificate(r)}>⬇ Download PDF</button>{r.status==='issued'&&<button className="icon-btn danger" disabled={busy} onClick={()=>setRevoke({id:r.certificate_id,reason:''})}>Revoke</button>}<button className="icon-btn danger" disabled={busy} onClick={()=>deleteCertificate(r)}><Trash2 size={14}/> Delete</button></div>)}
   </div>
   {editing&&editForm&&<div className="admin-modal-backdrop"><form className="admin-modal" onSubmit={saveEdit}><div className="admin-toolbar"><h2>Edit issued certificate</h2><button type="button" className="icon-btn" aria-label="Close editor" onClick={()=>{setEditing(null);setEditForm(null)}}><X size={16}/></button></div><p>Correct the existing record for <b>{editing}</b>. The Certificate ID, QR link, issue status and revocation history cannot be changed here.</p><div className="admin-form"><label>Recipient full name *<input required maxLength="160" value={editForm.recipient_name} onChange={e=>setEditForm({...editForm,recipient_name:e.target.value})}/></label><label>Certificate title *<input required maxLength="180" value={editForm.certificate_title} onChange={e=>setEditForm({...editForm,certificate_title:e.target.value})}/></label><label className="full">Course / internship / achievement *<input required maxLength="180" value={editForm.program_name} onChange={e=>setEditForm({...editForm,program_name:e.target.value})}/></label><label>Internship Start Date *<input type="date" required value={editForm.issue_date} onChange={e=>setEditForm({...editForm,issue_date:e.target.value})}/></label><label>Internship End Date / Achievement Date<input type="date" value={editForm.completion_date} onChange={e=>setEditForm({...editForm,completion_date:e.target.value})}/></label><label>Issuing organization *<input required maxLength="180" value={editForm.issuer_name} onChange={e=>setEditForm({...editForm,issuer_name:e.target.value})}/></label><label>Authorized signatory<input maxLength="160" value={editForm.signatory_name} onChange={e=>setEditForm({...editForm,signatory_name:e.target.value})}/></label><label>Grade / score<input maxLength="80" value={editForm.grade} onChange={e=>setEditForm({...editForm,grade:e.target.value})}/></label><label className="full">Additional details / duration<textarea rows="3" maxLength="1000" value={editForm.details} onChange={e=>setEditForm({...editForm,details:e.target.value})}/></label></div><div className="admin-form-actions"><button className="admin-primary" disabled={busy}>{busy?'Saving…':'Save certificate changes'}</button><button type="button" className="admin-btn" disabled={busy} onClick={()=>{setEditing(null);setEditForm(null)}}>Cancel</button></div></form></div>}
   {revoke&&<div className="admin-modal-backdrop"><form className="admin-modal" onSubmit={e=>{e.preventDefault();revokeCertificate()}}><h2>Revoke certificate</h2><p>Certificate <b>{revoke.id}</b> will remain in the database but will no longer be valid.</p><label>Revocation reason *<textarea required minLength="5" maxLength="1000" value={revoke.reason} onChange={e=>setRevoke({...revoke,reason:e.target.value})}/></label><div className="admin-form-actions"><button className="admin-primary" disabled={busy}>Confirm revocation</button><button type="button" className="admin-btn" disabled={busy} onClick={()=>setRevoke(null)}>Cancel</button></div></form></div>}
