@@ -421,7 +421,7 @@ function OfferLetterManager({supabase}){
   if(!w){setNotice({type:'error',text:'Allow pop-ups for this website, then click Print / Save PDF again.'});return;}
   const esc=escapeHtml;
   const fmt=value=>{if(!value)return '';const p=String(value).slice(0,10).split('-');if(p.length!==3)return esc(value);return esc(new Date(Number(p[0]),Number(p[1])-1,Number(p[2])).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}));};
-  const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(r.offer_letter_id)+' — EHO Offer Letter</title><style>
+  const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(r.offer_letter_id)} — EHO Offer Letter</title><style>
   @page{size:A4 portrait;margin:0}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;width:210mm;height:297mm;background:#fff;color:#172b49;font-family:Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -451,19 +451,19 @@ function OfferLetterManager({supabase}){
   .foot{position:absolute;bottom:7mm;left:16mm;right:16mm;border-top:1px solid #c4a45e;padding-top:2mm;display:flex;justify-content:space-between;gap:5mm;font-size:7pt;color:#475467}
   @media print{html,body{width:210mm!important;height:297mm!important;min-height:297mm!important;max-height:297mm!important;overflow:hidden!important} .page{width:210mm!important;height:297mm!important;min-height:297mm!important;max-height:297mm!important;margin:0!important;break-after:avoid!important;page-break-after:avoid!important}}
   </style></head><body><main class="page"><div class="inner">
-  <header class="head"><img src="'+location.origin+'/eho-logo.png" alt="EHO"><div><div class="brand">EHO</div><div class="org">ETHICAL HACKING ORGANIZATIONS</div></div></header>
+  <header class="head"><img src="${location.origin}/eho-logo.png" alt="EHO"><div><div class="brand">EHO</div><div class="org">ETHICAL HACKING ORGANIZATIONS</div></div></header>
   <div class="kicker">OFFICIAL COMMUNICATION</div><h1>Internship Offer Letter</h1><p class="subtitle">Learn · Build · Secure · Grow</p>
-  <div class="meta"><span><b>Reference:</b> '+esc(r.offer_letter_id)+'</span><span><b>Issue Date:</b> '+fmt(r.issue_date)+'</span></div>
-  <div class="body"><p class="salutation">Dear</p><div class="candidate">'+esc(r.recipient_name)+',</div>
-  <p>We are pleased to offer you an opportunity to participate in the <b>'+esc(r.program_name)+'</b> organized by <b>'+esc(r.issuer_name)+'</b>. We welcome you to this learning-focused internship and look forward to your active participation.</p>
-  <div class="program"><strong>Internship Domain:</strong> '+esc(r.program_name)+'<br><strong>Role / Participation:</strong> '+esc(r.participation)+'<br><strong>Duration:</strong> '+esc(r.duration)+'<br><strong>Internship Period:</strong> '+fmt(r.start_date)+' to '+fmt(r.end_date)+'</div>
-  <div class="section-title">Program Overview & Learning Activities</div><div class="details">'+esc(r.details||'You will take part in guided learning activities and practical assignments relevant to the selected internship domain.')+'</div>
+  <div class="meta"><span><b>Reference:</b> ${esc(r.offer_letter_id)}</span><span><b>Issue Date:</b> ${fmt(r.issue_date)}</span></div>
+  <div class="body"><p class="salutation">Dear</p><div class="candidate">${esc(r.recipient_name)},</div>
+  <p>We are pleased to offer you an opportunity to participate in the <b>${esc(r.program_name)}</b> organized by <b>${esc(r.issuer_name)}</b>. We welcome you to this learning-focused internship and look forward to your active participation.</p>
+  <div class="program"><strong>Internship Domain:</strong> ${esc(r.program_name)}<br><strong>Role / Participation:</strong> ${esc(r.participation)}<br><strong>Duration:</strong> ${esc(r.duration)}<br><strong>Internship Period:</strong> ${fmt(r.start_date)} to ${fmt(r.end_date)}</div>
+  <div class="section-title">Program Overview & Learning Activities</div><div class="details">${esc(r.details||'You will take part in guided learning activities and practical assignments relevant to the selected internship domain.')}</div>
   <p style="margin-top:5mm">You are expected to complete the assigned learning activities and project work within the stated internship period, follow professional and ethical practices, and submit work for review as instructed. Any certificate of completion will be subject to the program requirements and work actually completed.</p>
   <p>We wish you a productive and rewarding learning experience.</p></div>
-  <div class="sign-area"><div class="sign">'+(r.signatory_name?'<b>'+esc(r.signatory_name)+'</b><br>':'<b>Authorized Signatory</b><br>')+'Authorized Signatory<br>'+esc(r.issuer_name)+'</div><div class="stamp">EHO<br>OFFICIAL OFFER</div></div>
-  </div><footer class="foot"><span>'+esc(r.issuer_name)+'</span><b>'+esc(r.offer_letter_id)+'</b></footer></main><script>
+  <div class="sign-area"><div class="sign">${(r.signatory_name?'<b>'+esc(r.signatory_name)+'</b><br>':'<b>Authorized Signatory</b><br>')+'Authorized Signatory<br>'+esc(r.issuer_name)}</div><div class="stamp">EHO<br>OFFICIAL OFFER</div></div>
+  </div><footer class="foot"><span>${esc(r.issuer_name)}</span><b>${esc(r.offer_letter_id)}</b></footer></main><script>
   window.addEventListener("load",async()=>{try{await Promise.all(Array.from(document.images).map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;setTimeout(resolve,5000)})));}catch(e){}setTimeout(()=>{window.focus();window.print();},500);});
-  </script></body></html>';
+  </script></body></html>`;
   w.document.open();w.document.write(html);w.document.close();
  };
  const filtered=rows.filter(r=>(r.offer_letter_id+' '+r.recipient_name+' '+r.program_name).toLowerCase().includes(query.toLowerCase()));
