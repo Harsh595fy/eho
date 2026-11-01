@@ -108,6 +108,7 @@ function Home() {
   const [filter,setFilter] = useState("All domains");
   const [query,setQuery] = useState("");
   const [menuOpen,setMenuOpen] = useState(false);
+  const [socialOpen,setSocialOpen] = useState(false);
   const visibleCourses = useMemo(() => coursesData.filter(c=>c.status!=="unpublished")
     .filter(c=>filter==="All domains"||c.category===filter)
     .filter(c=>`${c.title} ${c.description} ${c.category}`.toLowerCase().includes(query.toLowerCase()))
@@ -125,8 +126,12 @@ function Home() {
       <button className="menu-toggle" onClick={()=>setMenuOpen(!menuOpen)} aria-label={menuOpen?"Close menu":"Open menu"}>{menuOpen?<X/>:<Menu/>}</button>
       <div className={`nav-links ${menuOpen?"nav-open":""}`}>
         {[[ "#home","Home"],["#services","Services"],["#learning","Learning"],["#internships","Internships"],["#about","About"]].map(([href,label])=><a key={href} onClick={()=>setMenuOpen(false)} href={href}>{label}</a>)}
+        <div className={`social-menu-wrap ${socialOpen?"social-menu-active":""}`}>
+          <button className="social-menu-trigger" type="button" aria-expanded={socialOpen} onClick={()=>setSocialOpen(v=>!v)}><Globe2 size={15}/> Social media <span className="social-chevron">▾</span></button>
+          {socialOpen&&<div className="social-dropdown" aria-label="EHO social media links">{socialLinks.map(({label,url,Icon})=><a key={label} href={label==="YouTube"?channelUrl:label==="LinkedIn"?linkedinUrl:url} target="_blank" rel="noopener noreferrer" onClick={()=>{setSocialOpen(false);setMenuOpen(false);}}><Icon size={17}/><span>{label}</span><ExternalLink size={13}/></a>)}</div>}
+        </div>
         <a className="nav-verify" onClick={()=>setMenuOpen(false)} href="/verify/"><BadgeCheck size={15}/> Verify</a>
-        <a className="nav-cta" href={projectMail}>Start a project <ArrowUpRight size={15}/></a>
+        <a className="nav-cta" onClick={()=>setMenuOpen(false)} href={projectMail}>Start a project <ArrowUpRight size={15}/></a>
       </div>
     </nav></header>
     <main>
