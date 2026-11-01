@@ -299,7 +299,8 @@
   .social-dropdown:before { display: none; }
   .social-dropdown a { padding: 11px 9px; }
 }
-\n
+
+
 /* Free, domain-specific external resources inside each learning roadmap */
 .roadmap-resources{border-top:1px solid #ffffff12;padding-top:20px;margin-top:14px}
 .roadmap-resources-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
