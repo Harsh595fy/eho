@@ -127,3 +127,27 @@
 .course-tech-logo small{font-size:8px;line-height:1.2;color:#d0d8e8;text-align:center;white-space:nowrap}
 .course-brand-mark>span{margin-top:4px}
 @media(max-width:420px){.course-tech-logos{gap:8px}.course-tech-logo img{width:34px;height:34px}.course-tech-logo{min-width:38px}.course-tech-logo small{font-size:7px}}
+
+
+/* Readability upgrade: stronger secondary headings and supporting copy */
+:root{--muted:#c3cde0}
+.section-kicker,.eyebrow{font-size:12px;letter-spacing:1.7px;color:#f0cf70}
+.hero-content>p{font-size:17px;color:#d0d8e8;line-height:1.85}
+.hero-points{font-size:13px;color:#c2cce0}
+.section-heading p,.channel-copy p{font-size:15px;color:#c5cfe1;line-height:1.8}
+.course-body>p,.internship-card>p{font-size:13px;color:#c2cce0;line-height:1.8}
+.service-card p,.learning-intro-grid p,.process-card p,.project-callout p{font-size:13px;color:#c5cfe1;line-height:1.85}
+.dual-model-inner>div:first-child p,.about-details p,.contact-inner p{font-size:14px;color:#c5cfe1;line-height:1.9}
+.model-card p,.model-card li{font-size:13px;color:#c5cfe1;line-height:1.85}
+.programme-application-card p{font-size:13px;color:#c5cfe1;line-height:1.85}
+.learning-summary p{font-size:13px;color:#c5cfe1;line-height:1.8}
+.brand small{font-size:11px;color:#c1cbe0}
+.footer-grid>div:not(:first-child)>a{font-size:12px;color:#c1cbe0}
+.footer-note{font-size:11px;color:#aab6cc}
+.category,.library-count,.duration,.programme-pill,.programme-highlights,.domain-chip{font-size:11px}
+@media(max-width:640px){
+ .hero-content>p{font-size:15px}
+ .section-heading p,.channel-copy p{font-size:14px}
+ .course-body>p,.internship-card>p,.service-card p,.learning-intro-grid p,.process-card p,.project-callout p,.programme-application-card p{font-size:13px}
+ .dual-model-inner>div:first-child p,.about-details p,.contact-inner p{font-size:14px}
+}
