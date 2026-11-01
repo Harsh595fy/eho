@@ -118,3 +118,12 @@
  .course-tools{padding:10px}
 }
 @media(prefers-reduced-motion:reduce){.programme-application-card,.service-card,.course-card,.internship-card{transition:none}}
+
+
+/* Real technology logo sets on every learning-path card */
+.course-tech-logos{display:flex;align-items:flex-start;justify-content:center;gap:clamp(9px,1.8vw,20px);width:100%;margin:4px auto 0}
+.course-tech-logo{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:48px}
+.course-tech-logo img{display:block;width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 5px 12px #0004)}
+.course-tech-logo small{font-size:8px;line-height:1.2;color:#d0d8e8;text-align:center;white-space:nowrap}
+.course-brand-mark>span{margin-top:4px}
+@media(max-width:420px){.course-tech-logos{gap:8px}.course-tech-logo img{width:34px;height:34px}.course-tech-logo{min-width:38px}.course-tech-logo small{font-size:7px}}
