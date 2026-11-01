@@ -112,7 +112,8 @@ function Home() {
   const [filter,setFilter] = useState("All domains");
   const [query,setQuery] = useState("");
   const [menuOpen,setMenuOpen] = useState(false);
-  const [socialOpen,setSocialOpen] = useState(false);\n  const [activeRoadmapId,setActiveRoadmapId] = useState(domainsData[0]?.id || "cybersecurity");
+  const [socialOpen,setSocialOpen] = useState(false);
+  const [activeRoadmapId,setActiveRoadmapId] = useState(domainsData[0]?.id || "cybersecurity");
   const visibleCourses = useMemo(() => coursesData.filter(c=>c.status!=="unpublished")
     .filter(c=>filter==="All domains"||c.category===filter)
     .filter(c=>`${c.title} ${c.description} ${c.category}`.toLowerCase().includes(query.toLowerCase()))
