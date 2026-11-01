@@ -97,7 +97,7 @@ const freeRoadmapResources = {
   "data-science": [
     {name:"Kaggle Learn",topic:"Python, pandas, visualisation & SQL",url:"https://www.kaggle.com/learn",note:"Free interactive lessons"},
     {name:"SQLBolt",topic:"SQL queries and database basics",url:"https://sqlbolt.com/",note:"Free interactive SQL lessons"},
-    {name:" freeCodeCamp",topic:"Data analysis with Python",url:"https://www.freecodecamp.org/learn/data-analysis-with-python/",note:"Free curriculum"}
+    {name:"freeCodeCamp",topic:"Data analysis with Python",url:"https://www.freecodecamp.org/learn/data-analysis-with-python/",note:"Free curriculum"}
   ],
   cloud: [
     {name:"Microsoft Learn",topic:"Cloud & Azure fundamentals",url:"https://learn.microsoft.com/en-us/training/azure/",note:"Free learning paths"},
