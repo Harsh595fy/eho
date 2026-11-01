@@ -101,6 +101,8 @@ function Home() {
   const uniqueInternships = internshipsData.filter(item=>item.published).filter((item,index,arr)=>arr.findIndex(x=>x.domainId===item.domainId)===index);
   const projectMail = mailLink("Project enquiry — EHO", "Hello EHO team,\n\nI would like to discuss a project.\n\nProject type:\nBrief requirements:\nExpected timeline:\nName / organisation:\nContact number:\n");
   const internshipMail = mailLink("Internship enquiry — EHO","Hello EHO team,\n\nI am interested in an EHO internship.\n\nName:\nPreferred domain:\nPreferred duration:\nContact number:\n");
+  const teachingFormUrl = "https://forms.gle/xu6TyKVNQgLPtFYD6";
+  const internshipFormUrl = "https://forms.gle/f3Qp1mp6oC5rX73f7";
   return <div>
     <header className="site-header"><nav className="nav wrap" aria-label="Main navigation">
       <a className="brand" href="#home" aria-label="EHO home"><BrandLogo size={48}/><span><strong>EHO</strong><small>Ethical Hacking Organizations</small></span></a>
@@ -142,9 +144,9 @@ function Home() {
       </section>
       <section className="internship-section" id="internships"><div className="wrap section">
         <div className="section-heading"><div><span className="section-kicker">PRACTICAL EXPERIENCE</span><h2>Internship programmes</h2><p>Choose a learning duration and domain. Each programme is intended to include guided tasks and practical project work appropriate to its duration.</p></div></div>
-        <div className="internship-grid">{uniqueInternships.map((item,index)=><article className="internship-card" key={item.domainId||index}><div className="internship-top"><span className="duration"><Clock3 size={15}/> Flexible duration</span><span className="internship-icon"><Layers3/></span></div><h3>{item.domain||item.title}</h3><p>{item.description}</p>{item.skills?.length>0&&<div className="public-skills">{item.skills.slice(0,4).map(skill=><span key={skill}>{skill}</span>)}</div>}
+        <div className="programme-application-grid"><article className="programme-application-card"><span className="section-kicker">FREE · 6 MONTHS · REMOTE</span><h3>Teaching & Knowledge Contributor Internship</h3><p>Create educational videos, explain technical concepts and help build EHO’s learning library. Certificate and performance-based LOR opportunities are subject to successful completion and review.</p><a className="btn btn-gold" href={teachingFormUrl} target="_blank" rel="noopener noreferrer">Apply for Teaching Programme <ArrowUpRight size={16}/></a></article><article className="programme-application-card"><span className="section-kicker">DOMAIN-BASED · PROJECT-LED</span><h3>Regular Internship Programme</h3><p>Choose your preferred IT domain and internship duration. Work through guided tasks, practical assignments and project deliverables.</p><a className="btn btn-outline" href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Apply for Internship <ArrowUpRight size={16}/></a></article></div><div className="internship-grid">{uniqueInternships.map((item,index)=><article className="internship-card" key={item.domainId||index}><div className="internship-top"><span className="duration"><Clock3 size={15}/> Flexible duration</span><span className="internship-icon"><Layers3/></span></div><h3>{item.domain||item.title}</h3><p>{item.description}</p>{item.skills?.length>0&&<div className="public-skills">{item.skills.slice(0,4).map(skill=><span key={skill}>{skill}</span>)}</div>}
           <div className="domain-prices">{internshipsData.filter(pkg=>pkg.domainId===item.domainId&&pkg.published).sort((a,b)=>parseInt(a.duration)-parseInt(b.duration)).map(pkg=><div key={pkg.id}><small>{pkg.duration}</small><b>₹{Number(pkg.price).toLocaleString("en-IN")}</b></div>)}</div>
-          <a className="internship-apply" href={internshipMail}>Enquire about this track <ArrowUpRight size={15}/></a>
+          <a className="internship-apply" href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Register for this internship <ArrowUpRight size={15}/></a>
         </article>)}</div>
         <p className="pricing-note">Programme scope, task schedule, eligibility and deliverables are shared with applicants before enrolment. Fees shown are programme fees; any separately offered assessment or certification is communicated clearly.</p>
       </div></section>
@@ -158,7 +160,7 @@ function Home() {
     </main>
     <footer className="footer"><div className="wrap footer-grid">
       <div className="footer-brand"><a className="brand" href="#home"><BrandLogo size={56}/><span><strong>EHO</strong><small>Ethical Hacking Organizations</small></span></a><p>Learn • Build • Secure • Grow</p><a className="footer-email" href={`mailto:${EMAIL}`}><Mail size={15}/>{EMAIL}</a></div>
-      <div><h4>Explore</h4><a href="#services">Technology services</a><a href="#learning">Free learning</a><a href="#internships">Internships</a><a href="#about">About EHO</a></div>
+      <div><h4>Explore</h4><a href="#services">Technology services</a><a href="#learning">Free learning</a><a href="#internships">Internships</a><a href={teachingFormUrl} target="_blank" rel="noopener noreferrer">Teaching Contributor Application</a><a href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Internship Registration</a><a href="#about">About EHO</a></div>
       <div><h4>Connect</h4>{socialLinks.map(({label,url,Icon})=><a key={label} href={url} target="_blank" rel="noopener noreferrer"><Icon size={16}/>{label}</a>)}</div>
       <div><h4>Trust & support</h4><a href="/verify/">Verify a certificate <BadgeCheck size={15}/></a><a href={`mailto:${EMAIL}`}>Contact the EHO team <ArrowUpRight size={15}/></a><p className="footer-note">Certificate verification checks the current official EHO record.</p></div>
     </div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} EHO — Ethical Hacking Organizations</span><span>Technology learning & project services</span></div></footer>
