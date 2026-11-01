@@ -183,25 +183,8 @@ function Home() {
   const channelUrl = validYoutube(siteSettings.youtubeChannelUrl) ? siteSettings.youtubeChannelUrl : "https://youtube.com/@eho-o2r";
   const linkedinUrl = safeHttps(siteSettings.linkedinUrl) ? siteSettings.linkedinUrl : socialLinks[0].url;
   const uniqueInternships = internshipsData.filter(item=>item.published).filter((item,index,arr)=>arr.findIndex(x=>x.domainId===item.domainId)===index);
-  const projectMail = mailLink("Project enquiry — EHO", "Hello EHO team,
-
-I would like to discuss a project.
-
-Project type:
-Brief requirements:
-Expected timeline:
-Name / organisation:
-Contact number:
-");
-  const internshipMail = mailLink("Internship enquiry — EHO","Hello EHO team,
-
-I am interested in an EHO internship.
-
-Name:
-Preferred domain:
-Preferred duration:
-Contact number:
-");
+  const projectMail = mailLink("Project enquiry — EHO", "Hello EHO team,\n\nI would like to discuss a project.\n\nProject type:\nBrief requirements:\nExpected timeline:\nName / organisation:\nContact number:\n");
+  const internshipMail = mailLink("Internship enquiry — EHO","Hello EHO team,\n\nI am interested in an EHO internship.\n\nName:\nPreferred domain:\nPreferred duration:\nContact number:\n");
   const teachingFormUrl = "https://forms.gle/xu6TyKVNQgLPtFYD6";
   const internshipFormUrl = "https://forms.gle/f3Qp1mp6oC5rX73f7";
   return <div>
