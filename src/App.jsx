@@ -73,6 +73,10 @@ const validYoutube = (value) => {
   try { return ["youtube.com","www.youtube.com","m.youtube.com","youtu.be","www.youtu.be"].includes(new URL(value).hostname); } catch { return false; }
 };
 const mailLink = (subject, body="") => `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+const studentShowcasePosts = [
+  // Add approved public LinkedIn post links here. No student images or uploads are stored.
+];
+
 
 function CourseCard({ course }) {
   const Icon = iconMap[course.category] || BookOpen;
@@ -108,7 +112,7 @@ function Home() {
   const [filter,setFilter] = useState("All domains");
   const [query,setQuery] = useState("");
   const [menuOpen,setMenuOpen] = useState(false);
-  const [socialOpen,setSocialOpen] = useState(false);
+  const [socialOpen,setSocialOpen] = useState(false);\n  const [activeRoadmapId,setActiveRoadmapId] = useState(domainsData[0]?.id || "cybersecurity");
   const visibleCourses = useMemo(() => coursesData.filter(c=>c.status!=="unpublished")
     .filter(c=>filter==="All domains"||c.category===filter)
     .filter(c=>`${c.title} ${c.description} ${c.category}`.toLowerCase().includes(query.toLowerCase()))
@@ -125,7 +129,7 @@ function Home() {
       <a className="brand" href="#home" aria-label="EHO home"><BrandLogo size={48}/><span><strong>EHO</strong><small>Ethical Hacking Organizations</small></span></a>
       <button className="menu-toggle" onClick={()=>setMenuOpen(!menuOpen)} aria-label={menuOpen?"Close menu":"Open menu"}>{menuOpen?<X/>:<Menu/>}</button>
       <div className={`nav-links ${menuOpen?"nav-open":""}`}>
-        {[[ "#home","Home"],["#services","Services"],["#learning","Learning"],["#internships","Internships"],["#about","About"]].map(([href,label])=><a key={href} onClick={()=>setMenuOpen(false)} href={href}>{label}</a>)}
+        {[[ "#home","Home"],["#services","Services"],["#learning","Learning"],["#internships","Internships"],["#student-work","Student Work"],["#roadmap","Roadmaps"],["#about","About"]].map(([href,label])=><a key={href} onClick={()=>setMenuOpen(false)} href={href}>{label}</a>)}
         <div className={`social-menu-wrap ${socialOpen?"social-menu-active":""}`}>
           <button className="social-menu-trigger" type="button" aria-expanded={socialOpen} onClick={()=>setSocialOpen(v=>!v)}><Globe2 size={15}/> Social media <span className="social-chevron">▾</span></button>
           {socialOpen&&<div className="social-dropdown" aria-label="EHO social media links">{socialLinks.map(({label,url,Icon})=><a key={label} href={label==="YouTube"?channelUrl:label==="LinkedIn"?linkedinUrl:url} target="_blank" rel="noopener noreferrer" onClick={()=>{setSocialOpen(false);setMenuOpen(false);}}><Icon size={17}/><span>{label}</span><ExternalLink size={13}/></a>)}</div>}
@@ -171,6 +175,20 @@ function Home() {
         </article>)}</div>
         <p className="pricing-note">Programme scope, task schedule, eligibility and deliverables are shared with applicants before enrolment. Fees shown are programme fees; any separately offered assessment or certification is communicated clearly.</p>
       </div></section>
+
+      <section className="section wrap student-showcase-section" id="student-work">
+        <div className="section-heading"><div><span className="section-kicker">STUDENT COMMUNITY</span><h2>Student work & achievements</h2><p>Explore projects, learning milestones and achievements shared by EHO learners. We link directly to students’ public LinkedIn posts instead of uploading images, keeping the site lightweight and inexpensive to operate.</p></div><a className="text-link" href={linkedinUrl} target="_blank" rel="noopener noreferrer">Visit EHO on LinkedIn <ArrowUpRight size={16}/></a></div>
+        {studentShowcasePosts.length>0 ? <div className="student-post-grid">{studentShowcasePosts.map((post,index)=><article className="student-post-card" key={post.url}><div className="student-post-top"><span className="student-post-icon"><Linkedin size={22}/></span><span className="section-kicker">STUDENT SPOTLIGHT · {String(index+1).padStart(2,"0")}</span></div><h3>{post.title}</h3><p>{post.description}</p><a href={post.url} target="_blank" rel="noopener noreferrer">View LinkedIn post <ArrowUpRight size={15}/></a></article>)}</div> : <div className="student-gallery-empty"><div className="student-empty-icon"><Users size={25}/></div><div><h3>Student spotlights are coming soon</h3><p>As learners share their project updates and achievements on LinkedIn, EHO can feature their original posts here—with their permission.</p></div><a className="btn btn-outline" href={linkedinUrl} target="_blank" rel="noopener noreferrer"><Linkedin size={16}/> Visit EHO LinkedIn <ArrowUpRight size={15}/></a></div>}
+        <p className="student-privacy-note">Only public post links approved by the student will be featured. EHO does not copy or host student photos and media on this website.</p>
+      </section>
+      <section className="roadmap-section" id="roadmap"><div className="wrap section">
+        <div className="section-heading"><div><span className="section-kicker">YOUR LEARNING JOURNEY</span><h2>Interactive learning roadmaps</h2><p>Choose an IT domain to see a suggested learning sequence—from foundations to practical skills. Move through the steps at your own pace.</p></div><div className="roadmap-heading-badge"><Workflow size={20}/><span>12 technology domains</span></div></div>
+        <div className="roadmap-layout">
+          <div className="roadmap-domain-list" role="tablist" aria-label="Choose a learning domain">{domainsData.map(domain=><button type="button" role="tab" aria-selected={activeRoadmapId===domain.id} className={activeRoadmapId===domain.id?"active":""} key={domain.id} onClick={()=>setActiveRoadmapId(domain.id)}><span className="roadmap-domain-emoji">{domain.icon||"◆"}</span><span>{domain.name}</span><ArrowRight size={15}/></button>)}</div>
+          {(()=>{const activeDomain=domainsData.find(d=>d.id===activeRoadmapId)||domainsData[0];const steps=activeDomain?.skills||[];return activeDomain?<div className="roadmap-detail" role="tabpanel"><div className="roadmap-detail-head"><div><span className="section-kicker">SELECTED ROADMAP</span><h3>{activeDomain.name}</h3><p>{activeDomain.description}</p></div><span className="roadmap-domain-hero">{activeDomain.icon||"◆"}</span></div><div className="roadmap-steps">{steps.map((step,index)=><div className="roadmap-step" key={step}><span className="roadmap-step-number">{String(index+1).padStart(2,"0")}</span><div><strong>{step}</strong><small>{index===0?"Start here":index===steps.length-1?"Apply this skill in a practical project":"Build this skill before moving to the next stage"}</small></div>{index===steps.length-1?<BadgeCheck size={18}/>:<ArrowRight size={16}/>}</div>)}</div><div className="roadmap-footer"><span><CheckCircle2 size={16}/> Suggested order · Learn, practise, then build</span><button className="btn btn-gold" type="button" onClick={()=>{setFilter(activeDomain.name);setQuery("");document.getElementById("learning")?.scrollIntoView({behavior:"smooth"});}}>View learning resources <ArrowUpRight size={15}/></button></div></div>:<div className="roadmap-detail"><p>Learning domains will appear here when available.</p></div>})()}
+        </div>
+        <p className="roadmap-disclaimer">Roadmaps are learning guides, not guaranteed course schedules. Topics and tools may be updated as EHO learning content develops.</p>
+      </div></section>
       <section className="dual-model-band" id="about"><div className="wrap dual-model-inner">
         <div><span className="section-kicker">THE EHO MODEL</span><h2>Learn with purpose.<br/><span>Build with responsibility.</span></h2><p>Our work is organised around two connected goals: make technology learning more accessible, and deliver useful digital work for real requirements.</p></div>
         <div className="model-card"><div className="model-number">01 / LEARNING</div><h3>EHO Learning Initiative</h3><p>Free educational resources, student development, guided internships, practical projects and assessment-led learning opportunities.</p><ul><li>Accessible learning content</li><li>Structured internship tracks</li><li>Project-based practice</li></ul></div>
@@ -181,7 +199,7 @@ function Home() {
     </main>
     <footer className="footer"><div className="wrap footer-grid">
       <div className="footer-brand"><a className="brand" href="#home"><BrandLogo size={56}/><span><strong>EHO</strong><small>Ethical Hacking Organizations</small></span></a><p>Learn • Build • Secure • Grow</p><a className="footer-email" href={`mailto:${EMAIL}`}><Mail size={15}/>{EMAIL}</a></div>
-      <div><h4>Explore</h4><a href="#services">Technology services</a><a href="#learning">Free learning</a><a href="#internships">Internships</a><a href={teachingFormUrl} target="_blank" rel="noopener noreferrer">Teaching Contributor Application</a><a href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Internship Registration</a><a href="#about">About EHO</a></div>
+      <div><h4>Explore</h4><a href="#services">Technology services</a><a href="#learning">Free learning</a><a href="#internships">Internships</a><a href="#student-work">Student Work</a><a href="#roadmap">Learning Roadmaps</a><a href={teachingFormUrl} target="_blank" rel="noopener noreferrer">Teaching Contributor Application</a><a href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Internship Registration</a><a href="#about">About EHO</a></div>
       <div><h4>Connect</h4>{socialLinks.map(({label,url,Icon})=><a key={label} href={url} target="_blank" rel="noopener noreferrer"><Icon size={16}/>{label}</a>)}</div>
       <div><h4>Trust & support</h4><a href="/verify/">Verify a certificate <BadgeCheck size={15}/></a><a href={`mailto:${EMAIL}`}>Contact the EHO team <ArrowUpRight size={15}/></a><p className="footer-note">Certificate verification checks the current official EHO record.</p></div>
     </div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} EHO — Ethical Hacking Organizations</span><span>Technology learning & project services</span></div></footer>
