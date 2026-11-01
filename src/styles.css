@@ -68,3 +68,53 @@
 
 /* Two clearly separated student application programmes */
 .programme-application-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0 0 22px}.programme-application-card{padding:25px;border:1px solid #e8c66b55;border-radius:14px;background:linear-gradient(140deg,#182747,#101a31);display:flex;flex-direction:column;align-items:flex-start}.programme-application-card h3{font:600 20px 'Space Grotesk',sans-serif;margin:12px 0 8px}.programme-application-card p{font-size:11px;line-height:1.8;color:var(--muted);margin:0 0 18px;flex:1}.programme-application-card .btn{margin-top:auto}@media(max-width:680px){.programme-application-grid{grid-template-columns:1fr}}
+
+
+/* Focused homepage polish: clearer grouping, calmer learning library and balanced programmes */
+.learning-summary{display:flex;align-items:center;gap:16px;padding:18px 20px;margin:24px 0 38px;border:1px solid #e8c66b30;border-radius:13px;background:linear-gradient(100deg,#172541,#101a31)}
+.learning-summary-icon{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:12px;background:#e8c66b18;color:var(--gold)}
+.learning-summary>div:nth-child(2){flex:1}
+.learning-summary strong{display:block;font:600 14px 'Space Grotesk',sans-serif;color:#f4f6fc}
+.learning-summary p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.6}
+.learning-summary>a{display:inline-flex;align-items:center;gap:7px;color:var(--gold);font-size:10px;font-weight:700;white-space:nowrap}
+.course-library-heading{margin-top:8px}
+.course-brand-mark{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:#e8c66b}
+.course-brand-mark img{width:58px;height:58px;object-fit:contain;filter:drop-shadow(0 5px 14px #0005)}
+.course-brand-mark span{font:600 10px 'Space Grotesk',sans-serif;letter-spacing:.8px;text-transform:uppercase;color:#c5cfe1}
+.course-art{height:158px}
+.course-body{padding:20px}
+.course-body h3{font-size:18px}
+.programme-application-grid{align-items:stretch;gap:18px;margin-bottom:28px}
+.programme-application-card{position:relative;min-height:300px;padding:25px 26px 24px;overflow:hidden;border-color:#ffffff18;box-shadow:0 12px 32px #0002;transition:transform .2s,border-color .2s,box-shadow .2s}
+.programme-application-card:hover{transform:translateY(-3px);border-color:#e8c66b70;box-shadow:0 18px 40px #0003}
+.programme-application-card:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,var(--gold),transparent 80%)}
+.regular-programme:before{background:linear-gradient(90deg,#8eace7,transparent 80%)}
+.programme-card-top{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:20px}
+.programme-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:#e8c66b18;color:var(--gold);border:1px solid #e8c66b30}
+.regular-programme .programme-icon{background:#8eace718;color:#a9c2f4;border-color:#8eace733}
+.programme-pill{padding:7px 9px;border-radius:20px;background:#e8c66b16;border:1px solid #e8c66b35;color:var(--gold);font-size:9px;font-weight:800;letter-spacing:.8px}
+.paid-pill{background:#8eace718;border-color:#8eace733;color:#b8cbf3}
+.programme-application-card h3{font-size:21px;line-height:1.3;max-width:440px}
+.programme-application-card p{font-size:12px;line-height:1.75;max-width:560px}
+.programme-highlights{display:flex;flex-wrap:wrap;gap:10px 18px;margin:0 0 20px;color:#c1cce0;font-size:10px}
+.programme-highlights span{display:inline-flex;align-items:center;gap:6px}
+.programme-highlights svg{color:var(--gold)}
+.regular-programme .programme-highlights svg{color:#a9c2f4}
+.programme-application-card .btn{min-height:42px}
+.section-heading>div:first-child{max-width:760px}
+.service-card,.process-card,.learning-intro-grid article{box-shadow:0 8px 26px #00000012}
+.process-band{padding-block:54px}
+.process-card{padding:18px 20px}
+.process-card h3{margin-top:10px}
+.course-tools{padding:14px;border:1px solid #ffffff0d;border-radius:12px;background:#ffffff03;margin-bottom:20px}
+.internship-card{box-shadow:0 8px 26px #0002}
+.internship-card .domain-prices>div{background:#ffffff08}
+@media(max-width:680px){
+ .learning-summary{align-items:flex-start;flex-wrap:wrap;padding:16px;margin:18px 0 30px}
+ .learning-summary>div:nth-child(2){min-width:calc(100% - 65px)}
+ .learning-summary>a{margin-left:62px}
+ .programme-application-card{min-height:0;padding:22px}
+ .programme-highlights{flex-direction:column;gap:8px}
+ .course-tools{padding:10px}
+}
+@media(prefers-reduced-motion:reduce){.programme-application-card,.service-card,.course-card,.internship-card{transition:none}}
