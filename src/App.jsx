@@ -53,9 +53,19 @@ const iconMap = {
   "AI/ML": BrainCircuit, "Data Science": ChartNoAxesCombined, Cloud: CloudCog,
   SOC: Fingerprint, Software: Code2
 };
-const courseBrandMarks = {
-  Python: { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg", label: "Python" },
-  "Web Development": { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg", label: "HTML5" }
+const courseBrandMarks = [
+  { match: /cyber|ethical|penetration/i, label: "Cybersecurity", marks: [["owasp","OWASP"],["kalilinux","Kali Linux"],["linux","Linux"]] },
+  { match: /web|full.?stack/i, label: "Full Stack Web", marks: [["html5","HTML5"],["css3","CSS3"],["javascript","JavaScript"],["react","React"]] },
+  { match: /python/i, label: "Python", marks: [["python","Python"]] },
+  { match: /artificial intelligence|machine learning|ai.?ml/i, label: "AI & Machine Learning", marks: [["tensorflow","TensorFlow"],["pytorch","PyTorch"],["scikitlearn","Scikit-learn"]] },
+  { match: /data science|analytics/i, label: "Data Science", marks: [["pandas","Pandas"],["numpy","NumPy"],["jupyter","Jupyter"]] },
+  { match: /cloud|devops/i, label: "Cloud & DevOps", marks: [["docker","Docker"],["kubernetes","Kubernetes"],["amazonaws","AWS"]] },
+  { match: /soc|forensic/i, label: "SOC & Forensics", marks: [["wireshark","Wireshark"],["linux","Linux"],["splunk","Splunk"]] },
+  { match: /software development/i, label: "Software Development", marks: [["git","Git"],["github","GitHub"],["vscode","VS Code"]] }
+];
+const getCourseBrand = course => {
+  const key = [course.id, course.title, course.category].filter(Boolean).join(" ");
+  return courseBrandMarks.find(item => item.match.test(key));
 };
 const safeHttps = (value) => { try { return new URL(value).protocol === "https:"; } catch { return false; } };
 const validYoutube = (value) => {
@@ -66,10 +76,10 @@ const mailLink = (subject, body="") => `mailto:${EMAIL}?subject=${encodeURICompo
 
 function CourseCard({ course }) {
   const Icon = iconMap[course.category] || BookOpen;
-  const brandMark = courseBrandMarks[course.category];
+  const brandMark = getCourseBrand(course);
   const available = course.status === "available" && validYoutube(course.youtubeUrl);
   return <article className="course-card">
-    <div className="course-art"><div className="course-brand-mark">{brandMark ? <img src={brandMark.src} alt="" loading="lazy" onError={e=>{e.currentTarget.style.display="none";}}/> : <Icon size={38} strokeWidth={1.5} aria-hidden="true"/>}<span>{brandMark?.label || course.category}</span></div>
+    <div className="course-art"><div className="course-brand-mark">{brandMark ? <div className="course-tech-logos" aria-label={brandMark.label}>{brandMark.marks.map(([slug,label])=><span className="course-tech-logo" key={slug}><img src={`https://cdn.simpleicons.org/${slug}`} alt={label} loading="lazy" onError={e=>{e.currentTarget.parentElement.style.display="none";}}/><small>{label}</small></span>)}</div> : <Icon size={38} strokeWidth={1.5} aria-hidden="true"/>}<span>{brandMark?.label || course.category}</span></div>
       <span className={`status ${available ? "status-live" : "status-soon"}`}>{available ? "Available" : "In preparation"}</span>
       {course.featured && <span className="featured">Featured</span>}
     </div>
