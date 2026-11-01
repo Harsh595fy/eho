@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { ShieldCheck, Code2, BrainCircuit, Cloud, Database, Search, Menu, X, ArrowUpRight, Youtube, Linkedin, BookOpen, Clock3, BadgeCheck, ExternalLink, Instagram, Send, Mail, BriefcaseBusiness, Users, Workflow, Globe2, Smartphone, ArrowRight, CheckCircle2, Layers3 } from "lucide-react";
+import { ShieldCheck, Code2, BrainCircuit, Cloud, Database, Search, Menu, X, ArrowUpRight, Youtube, Linkedin, BookOpen, Clock3, BadgeCheck, ExternalLink, Instagram, Send, Mail, BriefcaseBusiness, Users, Workflow, Globe2, Smartphone, ArrowRight, CheckCircle2, Layers3, Terminal, ChartNoAxesCombined, CloudCog, Fingerprint } from "lucide-react";
 import settings from "../content/settings.json";
 import Admin from "./Admin.jsx";
 import Verify from "./Verify.jsx";
@@ -49,8 +49,13 @@ const workSteps = [
   ["04","Deliver","We hand over the agreed source files, documentation and deployment details."]
 ];
 const iconMap = {
-  Cybersecurity: ShieldCheck, "Web Development": Code2, Python: Code2,
-  "AI/ML": BrainCircuit, "Data Science": Database, Cloud, SOC: Search, Software: Code2
+  Cybersecurity: ShieldCheck, "Web Development": Code2, Python: Terminal,
+  "AI/ML": BrainCircuit, "Data Science": ChartNoAxesCombined, Cloud: CloudCog,
+  SOC: Fingerprint, Software: Code2
+};
+const courseBrandMarks = {
+  Python: { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg", label: "Python" },
+  "Web Development": { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg", label: "HTML5" }
 };
 const safeHttps = (value) => { try { return new URL(value).protocol === "https:"; } catch { return false; } };
 const validYoutube = (value) => {
@@ -61,9 +66,10 @@ const mailLink = (subject, body="") => `mailto:${EMAIL}?subject=${encodeURICompo
 
 function CourseCard({ course }) {
   const Icon = iconMap[course.category] || BookOpen;
+  const brandMark = courseBrandMarks[course.category];
   const available = course.status === "available" && validYoutube(course.youtubeUrl);
   return <article className="course-card">
-    <div className="course-art"><Icon size={42} strokeWidth={1.5} aria-hidden="true"/>
+    <div className="course-art"><div className="course-brand-mark">{brandMark ? <img src={brandMark.src} alt="" loading="lazy" onError={e=>{e.currentTarget.style.display="none";}}/> : <Icon size={38} strokeWidth={1.5} aria-hidden="true"/>}<span>{brandMark?.label || course.category}</span></div>
       <span className={`status ${available ? "status-live" : "status-soon"}`}>{available ? "Available" : "In preparation"}</span>
       {course.featured && <span className="featured">Featured</span>}
     </div>
@@ -137,14 +143,14 @@ function Home() {
       </div></section>
       <section className="section wrap" id="learning">
         <div className="section-heading"><div><span className="section-kicker">EHO LEARNING</span><h2>Learn without barriers.</h2><p>Accessible technology education across our IT domains. Free learning resources are the foundation; internships add structure, guided tasks and project practice.</p></div><div className="learning-badge"><BookOpen size={20}/><span>Learn • Practise • Build</span></div></div>
-        <div className="learning-intro-grid"><article><div className="service-icon"><Youtube/></div><h3>Free learning resources</h3><p>We are building a public video and resource library so learners can study core concepts at their own pace.</p><a href={channelUrl} target="_blank" rel="noopener noreferrer">Visit EHO YouTube <ArrowUpRight size={15}/></a></article><article><div className="service-icon"><Users/></div><h3>Guided internship tracks</h3><p>Structured learning tasks, practical assignments, project documentation and review milestones based on the selected duration.</p><a href="#internships">View internship tracks <ArrowUpRight size={15}/></a></article><article><div className="service-icon"><BadgeCheck/></div><h3>Assessment & verification</h3><p>Where offered, assessments and certificate records are handled separately from simply watching learning content.</p><a href="/verify/">Verify an EHO certificate <ArrowUpRight size={15}/></a></article></div>
+        <div className="learning-summary"><div className="learning-summary-icon"><BookOpen size={21}/></div><div><strong>One library. Multiple technology paths.</strong><p>Start with the fundamentals, practise through guided resources and build skills at your own pace.</p></div><a href={channelUrl} target="_blank" rel="noopener noreferrer">Free learning resources <ArrowUpRight size={15}/></a></div>
         <div className="course-library-heading"><div><span className="section-kicker">RESOURCE LIBRARY</span><h3>Explore learning paths</h3></div><span className="library-count">{visibleCourses.length} listed paths</span></div>
         <div className="course-tools"><label className="search-box"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search courses..." aria-label="Search courses"/></label><div className="filters" aria-label="Filter courses">{categories.map(c=><button key={c} className={`filter ${filter===c?"active":""}`} onClick={()=>setFilter(c)}>{c}</button>)}</div></div>
         <div className="courses-grid">{visibleCourses.map(c=><CourseCard key={c.id} course={c}/>)}{visibleCourses.length===0&&<div className="empty-state">No learning paths match your search. Try another keyword or domain.</div>}</div>
       </section>
       <section className="internship-section" id="internships"><div className="wrap section">
         <div className="section-heading"><div><span className="section-kicker">PRACTICAL EXPERIENCE</span><h2>Internship programmes</h2><p>Choose a learning duration and domain. Each programme is intended to include guided tasks and practical project work appropriate to its duration.</p></div></div>
-        <div className="programme-application-grid"><article className="programme-application-card"><span className="section-kicker">FREE · 6 MONTHS · REMOTE</span><h3>Teaching & Knowledge Contributor Internship</h3><p>Create educational videos, explain technical concepts and help build EHO’s learning library. Certificate and performance-based LOR opportunities are subject to successful completion and review.</p><a className="btn btn-gold" href={teachingFormUrl} target="_blank" rel="noopener noreferrer">Apply for Teaching Programme <ArrowUpRight size={16}/></a></article><article className="programme-application-card"><span className="section-kicker">DOMAIN-BASED · PROJECT-LED</span><h3>Regular Internship Programme</h3><p>Choose your preferred IT domain and internship duration. Work through guided tasks, practical assignments and project deliverables.</p><a className="btn btn-outline" href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Apply for Internship <ArrowUpRight size={16}/></a></article></div><div className="internship-grid">{uniqueInternships.map((item,index)=><article className="internship-card" key={item.domainId||index}><div className="internship-top"><span className="duration"><Clock3 size={15}/> Flexible duration</span><span className="internship-icon"><Layers3/></span></div><h3>{item.domain||item.title}</h3><p>{item.description}</p>{item.skills?.length>0&&<div className="public-skills">{item.skills.slice(0,4).map(skill=><span key={skill}>{skill}</span>)}</div>}
+        <div className="programme-application-grid"><article className="programme-application-card teaching-programme"><div className="programme-card-top"><span className="programme-icon"><BookOpen size={22}/></span><span className="programme-pill">NO PROGRAMME FEE</span></div><span className="section-kicker">6 MONTHS · REMOTE</span><h3>Teaching & Knowledge Contributor</h3><p>Create educational videos, explain technical concepts and help build EHO’s learning library. Certificate and performance-based LOR opportunities are subject to successful completion and review.</p><div className="programme-highlights"><span><CheckCircle2 size={15}/> Educational content creation</span><span><CheckCircle2 size={15}/> Knowledge-sharing experience</span></div><a className="btn btn-gold" href={teachingFormUrl} target="_blank" rel="noopener noreferrer">Apply for Teaching Programme <ArrowUpRight size={16}/></a></article><article className="programme-application-card regular-programme"><div className="programme-card-top"><span className="programme-icon"><BriefcaseBusiness size={22}/></span><span className="programme-pill paid-pill">PAID PROGRAMME</span></div><span className="section-kicker">MULTIPLE DOMAINS · PROJECT-LED</span><h3>Regular Internship Programme</h3><p>Choose your preferred IT domain and internship duration. Work through guided tasks, practical assignments and project deliverables.</p><div className="programme-highlights"><span><CheckCircle2 size={15}/> Structured practical tasks</span><span><CheckCircle2 size={15}/> Project-based deliverables</span></div><a className="btn btn-outline" href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Explore paid internships <ArrowUpRight size={16}/></a></article></div><div className="internship-grid">{uniqueInternships.map((item,index)=><article className="internship-card" key={item.domainId||index}><div className="internship-top"><span className="duration"><Clock3 size={15}/> Flexible duration</span><span className="internship-icon"><Layers3/></span></div><h3>{item.domain||item.title}</h3><p>{item.description}</p>{item.skills?.length>0&&<div className="public-skills">{item.skills.slice(0,4).map(skill=><span key={skill}>{skill}</span>)}</div>}
           <div className="domain-prices">{internshipsData.filter(pkg=>pkg.domainId===item.domainId&&pkg.published).sort((a,b)=>parseInt(a.duration)-parseInt(b.duration)).map(pkg=><div key={pkg.id}><small>{pkg.duration}</small><b>₹{Number(pkg.price).toLocaleString("en-IN")}</b></div>)}</div>
           <a className="internship-apply" href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Register for this internship <ArrowUpRight size={15}/></a>
         </article>)}</div>
