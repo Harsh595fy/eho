@@ -299,3 +299,19 @@
   .social-dropdown:before { display: none; }
   .social-dropdown a { padding: 11px 9px; }
 }
+\n
+/* Free, domain-specific external resources inside each learning roadmap */
+.roadmap-resources{border-top:1px solid #ffffff12;padding-top:20px;margin-top:14px}
+.roadmap-resources-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.roadmap-resources-heading h4{font:600 17px 'Space Grotesk',sans-serif;margin:7px 0 5px;color:#f2f5fc}
+.roadmap-resources-heading p{font-size:11px;line-height:1.65;color:#aebbd1;margin:0;max-width:540px}
+.free-only-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid #42c98a55;border-radius:20px;background:#42c98a12;color:#75e0aa;font-size:9px;font-weight:800;letter-spacing:.5px;white-space:nowrap}
+.roadmap-resource-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.roadmap-resource-card{display:flex;flex-direction:column;gap:8px;min-width:0;padding:13px;border:1px solid #ffffff14;border-radius:10px;background:#ffffff05;transition:border-color .2s,transform .2s,background .2s}
+.roadmap-resource-card:hover{border-color:#e5bd5066;background:#e5bd500c;transform:translateY(-2px)}
+.roadmap-resource-top{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#f2d477}
+.roadmap-resource-top strong{font-size:12px;line-height:1.4}
+.roadmap-resource-top svg{flex:0 0 auto;opacity:.8}
+.roadmap-resource-topic{font-size:11px;line-height:1.5;color:#e0e6f2}
+.roadmap-resource-card small{font-size:10px;line-height:1.5;color:#83d8a9}
+@media(max-width:760px){.roadmap-resource-grid{grid-template-columns:1fr}.roadmap-resources-heading{flex-direction:column;gap:10px}.roadmap-resource-card{padding:12px}}
