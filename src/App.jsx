@@ -73,7 +73,68 @@ const validYoutube = (value) => {
   try { return ["youtube.com","www.youtube.com","m.youtube.com","youtu.be","www.youtu.be"].includes(new URL(value).hostname); } catch { return false; }
 };
 const mailLink = (subject, body="") => `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-const studentShowcasePosts = [
+const freeRoadmapResources = {
+  cybersecurity: [
+    {name:"Cisco Skills for All",topic:"Networking & cybersecurity foundations",url:"https://skillsforall.com/",note:"Free courses and learning paths"},
+    {name:"TryHackMe",topic:"Guided cybersecurity labs",url:"https://tryhackme.com/resources/blog/free_path",note:"Use the free rooms and free path content"},
+    {name:"OWASP Web Security Testing Guide",topic:"Web security & testing methodology",url:"https://owasp.org/www-project-web-security-testing-guide/",note:"Free official documentation"}
+  ],
+  "web-development": [
+    {name:"freeCodeCamp",topic:"HTML, CSS, JavaScript & projects",url:"https://www.freecodecamp.org/learn/",note:"Free curriculum and projects"},
+    {name:"MDN Web Docs",topic:"Web standards, HTML, CSS & JavaScript",url:"https://developer.mozilla.org/en-US/docs/Learn",note:"Free documentation and tutorials"},
+    {name:"The Odin Project",topic:"Full-stack web development",url:"https://www.theodinproject.com/paths",note:"Free open curriculum"}
+  ],
+  python: [
+    {name:"Python Official Tutorial",topic:"Python fundamentals",url:"https://docs.python.org/3/tutorial/",note:"Free official tutorial"},
+    {name:"freeCodeCamp",topic:"Python practice & projects",url:"https://www.freecodecamp.org/learn/scientific-computing-with-python/",note:"Free course and projects"},
+    {name:"Kaggle Learn",topic:"Python exercises",url:"https://www.kaggle.com/learn/python",note:"Free interactive lessons"}
+  ],
+  "ai-ml": [
+    {name:"Google Machine Learning Crash Course",topic:"ML foundations & model evaluation",url:"https://developers.google.com/machine-learning/crash-course",note:"Free course"},
+    {name:"Kaggle Learn",topic:"Python, pandas & machine learning",url:"https://www.kaggle.com/learn",note:"Free interactive micro-courses"},
+    {name:"Microsoft Learn",topic:"AI fundamentals & responsible AI",url:"https://learn.microsoft.com/en-us/training/ai/",note:"Free learning modules"}
+  ],
+  "data-science": [
+    {name:"Kaggle Learn",topic:"Python, pandas, visualisation & SQL",url:"https://www.kaggle.com/learn",note:"Free interactive lessons"},
+    {name:"SQLBolt",topic:"SQL queries and database basics",url:"https://sqlbolt.com/",note:"Free interactive SQL lessons"},
+    {name:" freeCodeCamp",topic:"Data analysis with Python",url:"https://www.freecodecamp.org/learn/data-analysis-with-python/",note:"Free curriculum"}
+  ],
+  cloud: [
+    {name:"Microsoft Learn",topic:"Cloud & Azure fundamentals",url:"https://learn.microsoft.com/en-us/training/azure/",note:"Free learning paths"},
+    {name:"AWS Skill Builder",topic:"Cloud practitioner foundations",url:"https://skillbuilder.aws/",note:"Free digital training is available"},
+    {name:"Docker Get Started",topic:"Containers & deployment basics",url:"https://docs.docker.com/get-started/",note:"Free official tutorials"}
+  ],
+  "soc-forensics": [
+    {name:"Cisco Skills for All",topic:"Networking & cybersecurity foundations",url:"https://skillsforall.com/",note:"Free courses"},
+    {name:"Splunk Security Education",topic:"SIEM & security monitoring",url:"https://www.splunk.com/en_us/training/free-courses/overview.html",note:"Free courses are available"},
+    {name:"CyberDefenders",topic:"SOC analysis & blue-team labs",url:"https://cyberdefenders.org/",note:"Free challenges are available"}
+  ],
+  software: [
+    {name:"CS50x",topic:"Computer science & programming foundations",url:"https://cs50.harvard.edu/x/",note:"Free to study; optional certificate costs extra"},
+    {name:"freeCodeCamp",topic:"Programming, algorithms & projects",url:"https://www.freecodecamp.org/learn/",note:"Free curriculum"},
+    {name:"GitHub Skills",topic:"Git, GitHub & collaboration",url:"https://skills.github.com/",note:"Free practical courses"}
+  ],
+  mobile: [
+    {name:"Android Developers",topic:"Android app development with Kotlin",url:"https://developer.android.com/courses",note:"Free official courses"},
+    {name:"Flutter documentation",topic:"Flutter & cross-platform app basics",url:"https://docs.flutter.dev/learn",note:"Free official learning resources"},
+    {name:"freeCodeCamp",topic:"Mobile app development tutorials",url:"https://www.freecodecamp.org/news/tag/mobile-development/",note:"Free articles and tutorials"}
+  ],
+  database: [
+    {name:"SQLBolt",topic:"SQL fundamentals & query practice",url:"https://sqlbolt.com/",note:"Free interactive lessons"},
+    {name:"PostgreSQL Tutorial",topic:"Relational database concepts & SQL",url:"https://www.postgresql.org/docs/current/tutorial.html",note:"Free official tutorial"},
+    {name:"W3Schools SQL",topic:"SQL basics, joins & examples",url:"https://www.w3schools.com/sql/",note:"Free tutorials"}
+  ],
+  networking: [
+    {name:"Cisco Skills for All",topic:"Networking basics & packet concepts",url:"https://skillsforall.com/",note:"Free networking courses"},
+    {name:"Practical Networking",topic:"Subnetting, routing & TCP/IP",url:"https://www.practicalnetworking.net/",note:"Free explanations and tutorials"},
+    {name:"Linux Journey",topic:"Linux command line & administration",url:"https://linuxjourney.com/",note:"Free learning resource"}
+  ],
+  "ui-ux": [
+    {name:"Figma Learn",topic:"Interface design & prototyping",url:"https://www.figma.com/resource-library/",note:"Free learning articles and tutorials"},
+    {name:"Google UX Design resources",topic:"UX research, wireframes & usability",url:"https://design.google/library/",note:"Free design learning resources"},
+    {name:"Laws of UX",topic:"Visual hierarchy & user-centred design",url:"https://lawsofux.com/",note:"Free UX principles and examples"}
+  ]
+};\nconst studentShowcasePosts = [
   // Add approved public LinkedIn post links here. No student images or uploads are stored.
 ];
 
@@ -186,7 +247,7 @@ function Home() {
         <div className="section-heading"><div><span className="section-kicker">YOUR LEARNING JOURNEY</span><h2>Interactive learning roadmaps</h2><p>Choose an IT domain to see a suggested learning sequence—from foundations to practical skills. Move through the steps at your own pace.</p></div><div className="roadmap-heading-badge"><Workflow size={20}/><span>12 technology domains</span></div></div>
         <div className="roadmap-layout">
           <div className="roadmap-domain-list" role="tablist" aria-label="Choose a learning domain">{domainsData.map(domain=><button type="button" role="tab" aria-selected={activeRoadmapId===domain.id} className={activeRoadmapId===domain.id?"active":""} key={domain.id} onClick={()=>setActiveRoadmapId(domain.id)}><span className="roadmap-domain-emoji">{domain.icon||"◆"}</span><span>{domain.name}</span><ArrowRight size={15}/></button>)}</div>
-          {(()=>{const activeDomain=domainsData.find(d=>d.id===activeRoadmapId)||domainsData[0];const steps=activeDomain?.skills||[];return activeDomain?<div className="roadmap-detail" role="tabpanel"><div className="roadmap-detail-head"><div><span className="section-kicker">SELECTED ROADMAP</span><h3>{activeDomain.name}</h3><p>{activeDomain.description}</p></div><span className="roadmap-domain-hero">{activeDomain.icon||"◆"}</span></div><div className="roadmap-steps">{steps.map((step,index)=><div className="roadmap-step" key={step}><span className="roadmap-step-number">{String(index+1).padStart(2,"0")}</span><div><strong>{step}</strong><small>{index===0?"Start here":index===steps.length-1?"Apply this skill in a practical project":"Build this skill before moving to the next stage"}</small></div>{index===steps.length-1?<BadgeCheck size={18}/>:<ArrowRight size={16}/>}</div>)}</div><div className="roadmap-footer"><span><CheckCircle2 size={16}/> Suggested order · Learn, practise, then build</span><button className="btn btn-gold" type="button" onClick={()=>{setFilter(activeDomain.name);setQuery("");document.getElementById("learning")?.scrollIntoView({behavior:"smooth"});}}>View learning resources <ArrowUpRight size={15}/></button></div></div>:<div className="roadmap-detail"><p>Learning domains will appear here when available.</p></div>})()}
+          {(()=>{const activeDomain=domainsData.find(d=>d.id===activeRoadmapId)||domainsData[0];const steps=activeDomain?.skills||[];return activeDomain?<div className="roadmap-detail" role="tabpanel"><div className="roadmap-detail-head"><div><span className="section-kicker">SELECTED ROADMAP</span><h3>{activeDomain.name}</h3><p>{activeDomain.description}</p></div><span className="roadmap-domain-hero">{activeDomain.icon||"◆"}</span></div><div className="roadmap-steps">{steps.map((step,index)=><div className="roadmap-step" key={step}><span className="roadmap-step-number">{String(index+1).padStart(2,"0")}</span><div><strong>{step}</strong><small>{index===0?"Start here":index===steps.length-1?"Apply this skill in a practical project":"Build this skill before moving to the next stage"}</small></div>{index===steps.length-1?<BadgeCheck size={18}/>:<ArrowRight size={16}/>}</div>)}</div><div className="roadmap-resources"><div className="roadmap-resources-heading"><div><span className="section-kicker">FREE EXTERNAL LEARNING</span><h4>Recommended resources for {activeDomain.name}</h4><p>Hand-picked free learning material matched to this domain. Optional paid upgrades and certificates are not required.</p></div><span className="free-only-pill"><CheckCircle2 size={14}/> FREE TO LEARN</span></div><div className="roadmap-resource-grid">{(freeRoadmapResources[activeDomain.id]||[]).map(resource=><a className="roadmap-resource-card" key={resource.name} href={resource.url} target="_blank" rel="noopener noreferrer"><span className="roadmap-resource-top"><strong>{resource.name}</strong><ExternalLink size={15}/></span><span className="roadmap-resource-topic">{resource.topic}</span><small>{resource.note}</small></a>)}</div></div><div className="roadmap-footer"><span><CheckCircle2 size={16}/> Suggested order · Learn, practise, then build</span><button className="btn btn-gold" type="button" onClick={()=>{setFilter(activeDomain.name);setQuery("");document.getElementById("learning")?.scrollIntoView({behavior:"smooth"});}}>View learning resources <ArrowUpRight size={15}/></button></div></div>:<div className="roadmap-detail"><p>Learning domains will appear here when available.</p></div>})()}
         </div>
         <p className="roadmap-disclaimer">Roadmaps are learning guides, not guaranteed course schedules. Topics and tools may be updated as EHO learning content develops.</p>
       </div></section>
