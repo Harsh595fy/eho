@@ -462,3 +462,18 @@ body{color:#f3f6fc;background:#070b18}
   .nav-links .nav-verify{font-size:11.5px}
   .social-menu-trigger{font-size:11.5px}
 }
+
+
+/* Navigation alignment: centered primary links and clearer About/Social separation */
+@media(min-width:1200px){
+  .nav{position:relative;justify-content:space-between}
+  .nav>.brand{position:relative;z-index:2}
+  .nav>.nav-links{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:calc(100% - 300px);justify-content:center;gap:clamp(12px,.9vw,16px)}
+  .nav-links>a[href="#about"]{margin-right:clamp(8px,1vw,16px)}
+  .nav-links .social-menu-wrap{margin-left:clamp(5px,.55vw,9px)}
+}
+@media(min-width:1081px) and (max-width:1199px){
+  .nav-links{gap:12px}
+  .nav-links>a[href="#about"]{margin-right:8px}
+  .nav-links .social-menu-wrap{margin-left:5px}
+}
