@@ -491,3 +491,11 @@ body{color:#f3f6fc;background:#070b18}
  .programs-page .nav>.nav-links{gap:7px;font-size:9px}
  .programs-page .nav-links .nav-cta{font-size:8px;padding:8px}
 }
+
+
+/* Keep the brand subtitle clear of the centered primary navigation */
+@media(min-width:1200px){
+  .nav:not(.programs-page .nav){ }
+  .site-header .nav>.brand{position:relative;z-index:3;flex:0 0 230px;min-width:230px}
+  .site-header .nav>.nav-links{left:calc(50% + 42px);max-width:calc(100% - 360px);gap:clamp(10px,.78vw,14px)}
+}
