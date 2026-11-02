@@ -3,6 +3,7 @@ import { ShieldCheck, Code2, BrainCircuit, Cloud, Database, Search, Menu, X, Arr
 import settings from "../content/settings.json";
 import Admin from "./Admin.jsx";
 import Verify from "./Verify.jsx";
+import Programs from "./Programs.jsx";
 import BrandLogo from "./BrandLogo.jsx";
 import { getEhoData } from "./ehoData.js";
 import c1 from "../content/courses/cybersecurity-foundations.json";
@@ -162,6 +163,7 @@ function App() {
   const path = window.location.pathname;
   if (path === "/admin" || path.startsWith("/admin/")) return <Admin/>;
   if (path === "/verify" || path.startsWith("/verify/")) return <Verify/>;
+  if (path === "/programs" || path.startsWith("/programs/")) return <Programs/>;
   return <Home/>;
 }
 function Home() {
@@ -192,7 +194,7 @@ function Home() {
       <a className="brand" href="#home" aria-label="EHO home"><BrandLogo size={48}/><span><strong>EHO</strong><small>Ethical Hacking Organizations</small></span></a>
       <button className="menu-toggle" onClick={()=>setMenuOpen(!menuOpen)} aria-label={menuOpen?"Close menu":"Open menu"}>{menuOpen?<X/>:<Menu/>}</button>
       <div className={`nav-links ${menuOpen?"nav-open":""}`}>
-        {[[ "#home","Home"],["#services","Services"],["#learning","Learning"],["#internships","Internships"],["#student-work","Student Work"],["#roadmap","Roadmaps"],["#about","About"]].map(([href,label])=><a key={href} onClick={()=>setMenuOpen(false)} href={href}>{label}</a>)}
+        {[[ "#home","Home"],["#services","Services"],["#learning","Learning"],["#internships","Internships"],["/programs","Programme Terms"],["#student-work","Student Work"],["#roadmap","Roadmaps"],["#about","About"]].map(([href,label])=><a key={href} onClick={()=>setMenuOpen(false)} href={href}>{label}</a>)}
         <div className={`social-menu-wrap ${socialOpen?"social-menu-active":""}`}>
           <button className="social-menu-trigger" type="button" aria-expanded={socialOpen} onClick={()=>setSocialOpen(v=>!v)}><Globe2 size={15}/> Social media <span className="social-chevron">▾</span></button>
           {socialOpen&&<div className="social-dropdown" aria-label="EHO social media links">{socialLinks.map(({label,url,Icon})=><a key={label} href={label==="YouTube"?channelUrl:label==="LinkedIn"?linkedinUrl:url} target="_blank" rel="noopener noreferrer" onClick={()=>{setSocialOpen(false);setMenuOpen(false);}}><Icon size={17}/><span>{label}</span><ExternalLink size={13}/></a>)}</div>}
@@ -262,7 +264,7 @@ function Home() {
     </main>
     <footer className="footer"><div className="wrap footer-grid">
       <div className="footer-brand"><a className="brand" href="#home"><BrandLogo size={56}/><span><strong>EHO</strong><small>Ethical Hacking Organizations</small></span></a><p>Learn • Build • Secure • Grow</p><a className="footer-email" href={`mailto:${EMAIL}`}><Mail size={15}/>{EMAIL}</a></div>
-      <div><h4>Explore</h4><a href="#services">Technology services</a><a href="#learning">Free learning</a><a href="#internships">Internships</a><a href="#student-work">Student Work</a><a href="#roadmap">Learning Roadmaps</a><a href={teachingFormUrl} target="_blank" rel="noopener noreferrer">Teaching Contributor Application</a><a href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Internship Registration</a><a href="#about">About EHO</a></div>
+      <div><h4>Explore</h4><a href="#services">Technology services</a><a href="#learning">Free learning</a><a href="#internships">Internships</a><a href="/programs">Programme Terms & Business</a><a href="#student-work">Student Work</a><a href="#roadmap">Learning Roadmaps</a><a href={teachingFormUrl} target="_blank" rel="noopener noreferrer">Teaching Contributor Application</a><a href={internshipFormUrl} target="_blank" rel="noopener noreferrer">Internship Registration</a><a href="#about">About EHO</a></div>
       <div><h4>Connect</h4>{socialLinks.map(({label,url,Icon})=><a key={label} href={url} target="_blank" rel="noopener noreferrer"><Icon size={16}/>{label}</a>)}</div>
       <div><h4>Trust & support</h4><a href="/verify/">Verify a certificate <BadgeCheck size={15}/></a><a href={`mailto:${EMAIL}`}>Contact the EHO team <ArrowUpRight size={15}/></a><p className="footer-note">Certificate verification checks the current official EHO record.</p></div>
     </div><div className="wrap footer-bottom"><span>© {new Date().getFullYear()} EHO — Ethical Hacking Organizations</span><span>Technology learning & project services</span></div></footer>
