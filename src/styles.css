@@ -383,3 +383,59 @@
 .programs-footer a:hover{color:var(--gold)}
 @media(max-width:800px){.terms-columns{grid-template-columns:1fr}.terms-pricing{grid-template-columns:1fr}.company-service-grid{grid-template-columns:repeat(2,1fr)}.company-process{grid-template-columns:1fr;gap:12px}}
 @media(max-width:560px){.programs-hero{padding:48px 0 55px}.programs-hero h1{letter-spacing:-1.4px}.terms-card{padding:18px}.terms-price-grid{grid-template-columns:repeat(2,1fr)}.terms-two-notes{grid-template-columns:1fr}.company-service-grid{grid-template-columns:1fr}.company-process-steps{grid-template-columns:1fr}.company-cta{align-items:flex-start;flex-direction:column}.programs-footer>.wrap{align-items:flex-start;flex-direction:column}.programs-footer>.wrap>div{gap:12px}}
+
+
+/* Contrast and navigation refinement — global site polish */
+:root{
+  --bg:#070b18;
+  --panel:#101a32;
+  --panel2:#16223f;
+  --muted:#c0cbe0;
+  --gold:#f0cb68;
+  --line:rgba(240,203,104,.24);
+}
+body{color:#f3f6fc;background:#070b18}
+.site-header{background:rgba(7,11,24,.97);border-bottom-color:rgba(240,203,104,.24)}
+.nav{gap:18px}
+.nav .brand{gap:9px;flex:0 0 auto}
+.nav .brand-logo{width:42px!important;height:42px!important}
+.nav .brand small{font-size:9px;color:#c2cce0;white-space:nowrap}
+.nav-links{gap:clamp(11px,1.05vw,17px);font-size:11.5px;color:#edf1fa;white-space:nowrap}
+.nav-links>a:not(.nav-cta){padding:9px 0;position:relative}
+.nav-links>a:not(.nav-cta):after{content:"";position:absolute;left:0;right:100%;bottom:3px;height:2px;background:var(--gold);transition:right .2s}
+.nav-links>a:not(.nav-cta):hover:after{right:0}
+.nav-links .nav-cta{padding:10px 13px;font-size:10px;box-shadow:0 5px 18px #f0cb6822}
+.nav-links .nav-verify{font-size:11px;gap:5px}
+.social-menu-trigger{font-size:11px;color:#edf1fa}
+.section-heading p,.channel-copy p,.about-details p,.service-card p,.course-card p,.internship-card p,
+.terms-notice p,.security-boundary p,.terms-card p,.terms-two-notes p,.company-service-card p,
+.company-process-steps p,.company-cta p,.programs-hero p,.roadmap-resources-heading p,
+.roadmap-resource-card small,.roadmap-disclaimer,.terms-footnote{
+  color:#c3cee2;
+}
+.hero-content>p{color:#d0d8e8}
+.hero-points,.hero-trust-note{color:#c0cbe0}
+.brand small,.footer-brand p,.footer-note,.footer-bottom,.footer-grid p,
+.course-count span,.terms-price small,.terms-price span{color:#b4c1d8}
+.domain-chip,.filter,.search-box,.nav-links,.footer-grid>div>a{color:#e0e7f4}
+.footer-bottom{border-top-color:#ffffff20}
+.empty-state{color:#c0cbe0}
+.terms-list p{color:#d0d9e9}
+.terms-price small{color:#b9c5d9}
+.programs-back,.programs-footer>.wrap>div a{color:#c6d0e2}
+.company-process-steps strong{color:#f3f6fc}
+@media(min-width:1081px) and (max-width:1500px){
+  .nav{gap:12px}
+  .nav-links{gap:clamp(8px,.8vw,12px);font-size:10.5px}
+  .nav .brand{gap:7px}
+  .nav .brand-logo{width:38px!important;height:38px!important}
+  .nav .brand small{font-size:8px}
+  .nav-links .nav-cta{padding:9px 10px;font-size:9px}
+  .nav-links .nav-verify{font-size:10px}
+  .social-menu-trigger{font-size:10px;padding-inline:7px}
+}
+@media(max-width:1080px){
+  .nav-links{font-size:13px}
+  .nav-links>a:not(.nav-cta):after{display:none}
+  .nav-links .nav-cta{font-size:11px}
+}
