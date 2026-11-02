@@ -477,3 +477,17 @@ body{color:#f3f6fc;background:#070b18}
   .nav-links>a[href="#about"]{margin-right:8px}
   .nav-links .social-menu-wrap{margin-left:5px}
 }
+
+
+/* Programme page: keep the complete site navigation, but fit it cleanly */
+.programs-page .nav{position:relative;justify-content:space-between}
+.programs-page .nav>.nav-links{position:static;left:auto;top:auto;transform:none;width:auto;max-width:none;justify-content:flex-end;gap:clamp(7px,.62vw,11px);font-size:10px}
+.programs-page .nav .brand{flex:0 0 auto}
+.programs-page .nav-links .nav-cta{font-size:9px;padding:9px 10px}
+.programs-page .nav-links .nav-verify{font-size:10px}
+.programs-hero .programs-back{display:flex;width:max-content;margin:0 0 26px}
+.programs-hero .programs-kicker{display:block;margin:0 0 14px;line-height:1.5}
+@media(max-width:1100px){
+ .programs-page .nav>.nav-links{gap:7px;font-size:9px}
+ .programs-page .nav-links .nav-cta{font-size:8px;padding:8px}
+}
