@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {BookOpen, BriefcaseBusiness, Settings, Award, Plus, Trash2, Save, Download, Upload, ShieldCheck, LayoutDashboard, RefreshCw, LogOut, Copy, FileText, Pencil, X, Users} from 'lucide-react';
+import {BookOpen, BriefcaseBusiness, Settings, Award, Plus, Trash2, Save, Download, Upload, ShieldCheck, LayoutDashboard, RefreshCw, LogOut, Copy, FileText, Pencil, X, Users, Mail} from 'lucide-react';
 import { supabase, supabaseConfigError, supabaseProjectHost } from './supabaseClient.js';
 import { describeSupabaseError, describeLoginError } from './supabaseErrors.js';
 import { KEY, getEhoData } from './ehoData.js';
