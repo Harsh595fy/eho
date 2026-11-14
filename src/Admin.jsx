@@ -482,7 +482,7 @@ function OfferLetterManager({supabase}){
   const submissionMatch=String(r.details||'').match(/PROJECT_SUBMISSION_URL:\s*(https?:\/\/\S+)/);
   const submissionUrl=submissionMatch?submissionMatch[1]:'';
   const printableDetails=String(r.details||'').replace(/\n\n?PROJECT_SUBMISSION_URL:\s*https?:\/\/\S+/,'').trim();
-  const submissionBlock=submissionUrl?'<div class="submission-box"><strong>PROJECT SUBMISSION</strong><p>When your project is complete, submit your project files, repository/demo link and short report using the official EHO form.</p><a href="'+esc(submissionUrl)+'" target="_blank">Submit Your Project</a><div class="submission-url">'+esc(submissionUrl)+'</div></div>':'';
+  const submissionBlock=submissionUrl?'<div class="submission-box"><strong>PROJECT SUBMISSION</strong><p>When your project is complete, submit your project files, repository/demo link and short report using the official EHO form. Share your offer letter and completed project on LinkedIn or another professional platform, and tag EHO’s official page so our team can locate and review your work. If you cannot post publicly, use the form for private submission.</p><a href="'+esc(submissionUrl)+'" target="_blank">Submit Your Project</a><div class="submission-url">'+esc(submissionUrl)+'</div></div>':'';
   const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(r.offer_letter_id)} — EHO Offer Letter</title><style>
   @page{size:A4 portrait;margin:0}
   *{box-sizing:border-box}
