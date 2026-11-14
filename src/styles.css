@@ -540,3 +540,7 @@ body{color:#f3f6fc;background:#070b18}
   #learning .learning-summary-icon{margin-bottom:1px}
   #learning .learning-summary>a{grid-column:1}
 }
+
+/* EHO copy-and-paste email studio */
+.email-studio{gap:16px}.email-studio-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.email-studio-intro h2{display:flex;align-items:center;gap:9px;margin:8px 0}.email-studio-intro h2 svg{color:var(--gold)}.email-step-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.email-step-head>span:first-child{font-size:10px;font-weight:700;letter-spacing:1.7px;color:var(--gold)}.email-preview-label{display:grid;gap:7px;margin:13px 0;color:#aeb9d0;font-size:10px}.email-preview-label input,.email-preview-label textarea{width:100%;background:#080e20;color:#f1f4fb;border:1px solid #ffffff1b;border-radius:8px;padding:12px;font:inherit;font-size:12px}.email-preview-label textarea{line-height:1.65;resize:vertical;min-height:250px}.email-copy-actions{flex-wrap:wrap}.email-copy-actions button:disabled{opacity:.45;cursor:not-allowed}.email-studio .admin-warning{margin:18px 0 0}.email-studio .admin-notice{display:flex;align-items:center;gap:8px}.email-studio .admin-help{max-width:900px}
+@media(max-width:640px){.email-studio-intro{flex-direction:column}.email-step-head{align-items:flex-start;flex-wrap:wrap}.email-copy-actions button{width:100%}}
