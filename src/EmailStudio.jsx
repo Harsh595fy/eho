@@ -14,7 +14,7 @@ const domainDefaults={
  'Artificial Intelligence & Machine Learning':'AI and machine-learning fundamentals, Python workflows, data preparation, model usage and evaluation, prompt design and responsible AI practices.'
 };
 export default function EmailStudio(){
- const [form,setForm]=useState({type:'offer',programme:'Paid',name:'',email:'',domain:'Cybersecurity & Ethical Hacking',duration:'3 Months',start:today(),end:'',issue:today(),project:'',tasks:'',certificateId:'',achievement:'',signatory:'EHO Team'});
+ const [form,setForm]=useState({type:'offer',programme:'Paid',name:'',email:'',domain:'Cybersecurity & Ethical Hacking',duration:'3 Months',start:today(),end:'',issue:today(),project:'',tasks:'',projectSubmissionUrl:'',ehoLinkedInUrl:'',ehoInstagramUrl:'',certificateId:'',achievement:'',signatory:'EHO Team'});
  const [copied,setCopied]=useState('');
  const [error,setError]=useState('');
  const set=(key,value)=>setForm(v=>({...v,[key]:value}));
