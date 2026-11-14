@@ -42,7 +42,9 @@ export default function EmailStudio(){
  },[form,freeSix]);
  const copy=async(value,label)=>{try{await navigator.clipboard.writeText(value);setCopied(label);setTimeout(()=>setCopied(''),1800);setError('')}catch{setError('Clipboard access was blocked by the browser. Select the generated text and copy it manually.')}};
  const reset=()=>{setForm({type:'offer',programme:'Paid',name:'',email:'',domain:'Cybersecurity & Ethical Hacking',duration:'3 Months',start:today(),end:'',issue:today(),project:'',tasks:'',fee:'₹399',certificateId:'',achievement:'',signatory:'EHO Team'});setCopied('');setError('')};
- const complete=clean(form.name)&&clean(form.email)&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+ const emailValid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+ const typeRequirements=form.type==='certificate'?!!clean(form.certificateId):form.type==='recommendation'?!!clean(form.achievement):true;
+ const complete=!!clean(form.name)&&!!clean(form.email)&&emailValid&&typeRequirements;
  return <div className="certificate-workspace email-studio">
   <div className="admin-panel-card email-studio-intro"><div><span className="section-kicker">COMMUNICATION WORKSPACE</span><h2><Mail size={20}/> EHO Email Generator</h2><p className="admin-help">Prepare professional student emails, preview them, then copy the subject and message into Gmail. Nothing is sent or stored automatically, and no paid email API is required.</p></div><span className="admin-pill green">Copy & paste mode</span></div>
   <div className="admin-panel-card"><div className="email-step-head"><span>01 / EMAIL SETUP</span><button className="admin-btn" type="button" onClick={reset}><RefreshCw size={14}/> Reset form</button></div>
@@ -71,7 +73,7 @@ export default function EmailStudio(){
    <label className="email-preview-label">Subject<input readOnly value={content.subject}/></label>
    <label className="email-preview-label">Email body<textarea readOnly rows="18" value={content.body}/></label>
    <div className="admin-form-actions email-copy-actions"><button className="admin-primary" type="button" disabled={!complete} onClick={()=>copy(content.subject,'subject')}><Copy size={15}/>{copied==='subject'?'Subject copied':'Copy subject'}</button><button className="admin-primary" type="button" disabled={!complete} onClick={()=>copy(content.body,'body')}><Copy size={15}/>{copied==='body'?'Body copied':'Copy email body'}</button><button className="admin-btn" type="button" disabled={!complete} onClick={()=>copy('To: '+form.email+'\nSubject: '+content.subject+'\n\n'+content.body,'full')}><Copy size={15}/>{copied==='full'?'Complete email copied':'Copy complete email'}</button></div>
-   {!complete&&<p className="admin-help">Enter a valid student name and email address to enable copy actions.</p>}
+   {!complete&&<p className="admin-help">Enter a valid student name and email address. Add the real certificate ID or verified achievement when required.</p>}
    <p className="admin-help">Workflow: copy the complete email, open EHO Gmail, paste it into a new message, review all details and send manually. Always verify dates, programme fee, certificate ID and achievement claims before sending.</p>
   </div>
  </div>;
